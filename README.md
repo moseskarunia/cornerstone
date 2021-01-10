@@ -1,14 +1,34 @@
 # cornerstone
 
-A new Flutter package project.
+Set up your app development with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
 
-## Getting Started
+# Objectives
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+Cornerstone have 2 main goals:
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+## 1. Provides reusable skeleton to help set up clean architecture.
+
+The first time I learned clean architecture and applied it to a real-world project, I felt increased confidence in my app maintainability. And the reality is true. Updating things is a pleasant experience. But it's a pain to set up initially. That's why I create cornerstone. It's a library to help me set up clean architecture in a consistent and less-repetitive way. I hope you can also finds it helpful too.
+
+## 2. Provides reusable way to implement common use cases.
+
+### CRUD Operations
+
+Most modern apps revolves around CRUD operations through an API. In common scenarios, mostly it's just:
+- Getting one or more X.
+- Creating X through a json in the body and getting the created data as the response
+- Updating X with a set of parameters.
+- Deleting one or more X with some requirements.
+
+Imagine you need to do it for each entities in your app. For me it's super boring to write. Not to mention that it needs to be tested in multiple layers (data source, repository, and use cases).
+
+That's why I plan to write some implementations of cornerstone abstracts for common use cases utilizing dart generics. With generics, we can get consistent behavior for different type of entities.
+
+If you need a more specific use case, you can always write your own implementation.
+
+### Exception Handling
+
+Learning clean architecture from [this](https://resocoder.com/category/tutorials/flutter/tdd-clean-architecture/) tutorial, makes me hate exceptions. Repository is the last layer I need my exceptions to live. It needs to be converted into a nicer model with Failure, utilizing dartz.
+
+The problem with this approach is each functions in your repository must be wrapped in a try catch block, which subsequently needs to be tested as well. I like to test my apps, doesn't mean that I like to copy-pasted it several times. Multiplies it by... (you know the drill).
+

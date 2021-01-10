@@ -1,18 +1,17 @@
 name: cornerstone
-description: A new Flutter package project.
+description: Set up your app development with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
 version: 0.0.1
 repository: https://www.github.com/moseskarunia/cornerstone
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
+  equatable: ^1.2.5
+  meta: ^1.2.4
+  dartz: ^0.9.1
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-flutter:
+  test: ^1.14.6
+  mockito: ^4.1.1
+  coverage: ^0.14.1
