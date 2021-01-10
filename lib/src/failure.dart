@@ -7,9 +7,12 @@ class Failure extends Equatable {
   /// Name of the error. You can put anything here, but make sure to be as
   /// consistent as possible to make it easier to maintain.
   final String name;
+  
+  /// You can put anything here
+  final Map<String, dynamic> details;
 
-  const Failure({@required this.name});
+  const Failure({@required this.name, this.details});
 
   @override
-  List<Object> get props => [name];
+  List<Object> get props => [name, details];
 }
