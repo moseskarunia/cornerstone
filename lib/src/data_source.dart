@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:cornerstone/src/failure.dart';
+import 'package:dartz/dartz.dart';
+
 /// Implement this abstract in your data source if it can fetch some data.
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
@@ -16,16 +19,18 @@ import 'dart:async';
 ///   const SessionDataSource({@required this.client});
 ///
 ///   @override
-///   Future<Session> readOne({GetParams params}) async {
+///   FutureOr<Either<Failure,Session>> readOne({GetParams params}) async {
 ///     /// Perform client.get() or something.
 ///   }
 /// }
 /// ```
 ///
 /// If you can live with less type safety, you can simply use
-/// `Map<String,dynamic>` as Param
+/// `Map<String,dynamic>` as Param.
+///
+/// Instead of throwing an exception, you should return Left instead.
 abstract class SingleGetterDataSource<Type, Param> {
-  FutureOr<Type> readOne({Param param});
+  FutureOr<Either<Failure, Type>> readOne({Param param});
 }
 
 /// Implement this abstract in your data source if it can fetch some data.
@@ -44,16 +49,18 @@ abstract class SingleGetterDataSource<Type, Param> {
 ///   const PeopleDataSource({@required this.client});
 ///
 ///   @override
-///   Future<List<Session>> readMany({GetParams params}) async {
+///   FutureOr<Either<Failure,List<Session>>> readMany({GetParams params}) async {
 ///     /// Perform client.get() or something.
 ///   }
 /// }
 /// ```
 ///
 /// If you can live with less type safety, you can simply use
-/// `Map<String,dynamic>` as Param
+/// `Map<String,dynamic>` as Param.
+///
+/// Instead of throwing an exception, you should return Left instead.
 abstract class MultipleGetterDataSource<Type, Param> {
-  FutureOr<List<Type>> readMany({Param param});
+  FutureOr<Either<Failure, List<Type>>> readMany({Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data creation.
@@ -70,16 +77,18 @@ abstract class MultipleGetterDataSource<Type, Param> {
 ///   const AuthDataSource({@required this.client});
 ///
 ///   @override
-///   Future<Person> read({GetParams params}) async {
+///   FutureOr<Either<Failure,Person>> read({GetParams params}) async {
 ///     /// Perform client.post() or something.
 ///   }
 /// }
 /// ```
 ///
 /// If you can live with less type safety, you can simply use
-/// `Map<String,dynamic>` as Param
+/// `Map<String,dynamic>` as Param.
+///
+/// Instead of throwing an exception, you should return Left instead.
 abstract class CreatorDataSource<Type, Param> {
-  FutureOr<Type> create({Param param});
+  FutureOr<Either<Failure, Type>> create({Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data update
@@ -92,7 +101,7 @@ abstract class CreatorDataSource<Type, Param> {
 ///   const PeopleDataSource({@required this.client});
 ///
 ///   @override
-///   Future<Session> read({Person params}) async {
+///   Future<Either<Failure, Session>> read({Person params}) async {
 ///     /// Perform client.put() or something using json form of provided
 ///     /// Person object.
 ///   }
@@ -100,28 +109,33 @@ abstract class CreatorDataSource<Type, Param> {
 /// ```
 ///
 /// If you can live with less type safety, you can simply use
-/// `Map<String,dynamic>` as P
+/// `Map<String,dynamic>` as Param.
+///
+/// Instead of throwing an exception, you should return Left instead.
 abstract class UpdaterDataSource<Type, Param> {
-  FutureOr<Type> update({Param param});
+  FutureOr<Either<Failure, Type>> update({Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data deletion.
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
 /// ```dart
-/// class SessionDataSource implements DeleterDataSource<void, Null> {
+/// class SessionDataSource implements DeleterDataSource<Unit, Null> {
 ///   final HttpClient client;
 ///
 ///   const SessionDataSource({@required this.client});
 ///
 ///   @override
-///   Future<void> delete({Null params}) async {
+///   FutureOr<Either<Failure, Unit>> delete({Null params}) async {
 ///     /// Perform sign out
 ///   }
 /// }
 /// ```
 ///
+/// Instead of throwing an exception, you should return Left instead.
+///
 /// P.S. Signing out means deleting session. Therefore, deleter data source.
+/// P.S.S. Unit is how we represents void in dartz.
 abstract class DeleterDataSource<Type, Param> {
-  FutureOr<Type> delete({Param param});
+  FutureOr<Either<Failure, Type>> delete({Param param});
 }
