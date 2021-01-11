@@ -9,7 +9,7 @@ import 'package:dartz/dartz.dart';
 ///
 /// It can be connected with repository, although not every use case needs to
 /// depend on the repository.
-/// 
+///
 /// If you can live with less static typing, you can use `Map<String,dynamic`
 /// as Params.
 abstract class UseCase<Type, Params> {
