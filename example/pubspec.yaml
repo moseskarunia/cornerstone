@@ -9,13 +9,18 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  equatable: ^1.2.5
-  meta: ^1.2.4
-  dartz: ^0.9.1
+  copy_with_extension: ">=1.2.0 <2.0.0"
   cornerstone:
     path: ../
+  dartz: ^0.9.1
+  equatable: ^1.2.5
+  json_annotation: ^3.0.1
+  meta: ^1.2.4
 
 dev_dependencies:
-  test: ^1.14.6
-  mockito: ^4.1.1
+  build_runner: ">=1.0.0 <2.0.0"
+  copy_with_extension_gen: ">=1.2.0 <2.0.0"
   coverage: ^0.14.1
+  json_serializable: ^3.3.0
+  mockito: ^4.1.1
+  test: ^1.14.6
