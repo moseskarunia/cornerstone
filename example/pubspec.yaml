@@ -1,0 +1,21 @@
+name: example
+description: Cornerstone implementation in a pure dart app
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  equatable: ^1.2.5
+  meta: ^1.2.4
+  dartz: ^0.9.1
+  cornerstone:
+    path: ../
+
+dev_dependencies:
+  test: ^1.14.6
+  mockito: ^4.1.1
+  coverage: ^0.14.1
