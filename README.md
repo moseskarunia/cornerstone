@@ -1,4 +1,4 @@
-# cornerstone
+# Cornerstone
 
 Set up your app development with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
 
