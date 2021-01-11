@@ -13,6 +13,7 @@ dependencies:
   cornerstone:
     path: ../
   dartz: ^0.9.1
+  dio: ^3.0.10
   equatable: ^1.2.5
   json_annotation: ^3.0.1
   meta: ^1.2.4
