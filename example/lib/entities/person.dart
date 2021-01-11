@@ -5,7 +5,8 @@ part 'person.g.dart';
 
 @JsonSerializable()
 class Person extends Equatable {
-  final String id, name, email;
+  final int id;
+  final String name, email;
 
   const Person({this.id, this.name, this.email});
 

@@ -11,20 +11,20 @@ class MockResponse extends Mock implements Response {}
 void main() {
   final jsonListFixture = [
     <String, dynamic>{
-      'id': '123',
+      'id': 123,
       'name': 'John Doe',
       'email': 'johndoe@test.com',
     },
     <String, dynamic>{
-      'id': '456',
+      'id': 456,
       'name': 'Tony Stark',
       'email': 'tony@starkindustries.com',
     },
   ];
 
   final peopleListFixture = [
-    Person(id: '123', name: 'John Doe', email: 'johndoe@test.com'),
-    Person(id: '456', name: 'Tony Stark', email: 'tony@starkindustries.com'),
+    Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
+    Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
   ];
   MockClient client;
   PeopleDataSource dataSource;

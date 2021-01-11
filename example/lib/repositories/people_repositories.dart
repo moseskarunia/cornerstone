@@ -19,7 +19,10 @@ class PeopleRepositoryImpl extends PeopleRepository {
       final results = await dataSource.readMany();
       return Right(results);
     } catch (e) {
-      return Left(Failure(name: 'FAILED_TO_RETRIEVE_DATA'));
+      return Left(Failure(
+        name: 'FAILED_TO_RETRIEVE_DATA',
+        details: e.toString(),
+      ));
     }
   }
 }

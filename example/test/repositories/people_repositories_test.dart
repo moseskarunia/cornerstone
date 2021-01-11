@@ -10,8 +10,8 @@ class MockDataSource extends Mock implements PeopleDataSource {}
 
 void main() {
   final peopleListFixture = [
-    Person(id: '123', name: 'John Doe', email: 'johndoe@test.com'),
-    Person(id: '456', name: 'Tony Stark', email: 'tony@starkindustries.com'),
+    Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
+    Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
   ];
   MockDataSource dataSource;
   PeopleRepositoryImpl repo;
@@ -50,7 +50,10 @@ void main() {
 
           expect(
             (result as Left).value,
-            Failure(name: 'FAILED_TO_RETRIEVE_DATA'),
+            Failure<dynamic>(
+              name: 'FAILED_TO_RETRIEVE_DATA',
+              details: Exception().toString(),
+            ),
           );
         },
       );

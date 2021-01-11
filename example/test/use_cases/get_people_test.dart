@@ -10,8 +10,8 @@ class MockRepo extends Mock implements PeopleRepository {}
 
 void main() {
   final peopleListFixture = [
-    Person(id: '123', name: 'John Doe', email: 'johndoe@test.com'),
-    Person(id: '456', name: 'Tony Stark', email: 'tony@starkindustries.com'),
+    Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
+    Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
   ];
 
   final failureFixture = Failure(name: 'TEST_ERROR');
