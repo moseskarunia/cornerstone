@@ -13,5 +13,5 @@ import 'package:dartz/dartz.dart';
 /// If you can live with less static typing, you can use `Map<String,dynamic`
 /// as Params.
 abstract class UseCase<Type, Params> {
-  FutureOr<Either<Failure, Type>> call(Params params);
+  FutureOr<Either<Failure, Type>> call({Params params});
 }

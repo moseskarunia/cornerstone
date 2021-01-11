@@ -24,7 +24,7 @@ void main() {
   group('PeopleRepositoryImpl', () {
     group('getPeople', () {
       tearDown(() {
-        verify(dataSource.readMany());
+        verify(dataSource.readMany()).called(1);
       });
       test(
         'should return Right with list of people',
