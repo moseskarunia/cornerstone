@@ -22,8 +22,8 @@ import 'dart:async';
 ///
 /// If you can live with less type safety, you can simply use
 /// `Map<String,dynamic>` as P
-abstract class GetterDataSource<T, P> {
-  FutureOr<T> read({P params});
+abstract class GetterDataSource<Type, Param> {
+  FutureOr<Type> read({Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data creation.
@@ -48,8 +48,8 @@ abstract class GetterDataSource<T, P> {
 ///
 /// If you can live with less type safety, you can simply use
 /// `Map<String,dynamic>` as P
-abstract class CreatorDataSource<T, P> {
-  FutureOr<T> create({P params});
+abstract class CreatorDataSource<Type, Param> {
+  FutureOr<Type> create({Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data update
@@ -71,8 +71,8 @@ abstract class CreatorDataSource<T, P> {
 ///
 /// If you can live with less type safety, you can simply use
 /// `Map<String,dynamic>` as P
-abstract class UpdaterDataSource<T, P> {
-  FutureOr<T> update({P params});
+abstract class UpdaterDataSource<Type, Param> {
+  FutureOr<Type> update({Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data deletion.
@@ -92,6 +92,6 @@ abstract class UpdaterDataSource<T, P> {
 /// ```
 ///
 /// P.S. Signing out means deleting session. Therefore, deleter data source.
-abstract class DeleterDataSource<T, P> {
-  FutureOr<T> delete({P params});
+abstract class DeleterDataSource<Type, Param> {
+  FutureOr<Type> delete({Param param});
 }
