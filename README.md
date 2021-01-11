@@ -8,7 +8,7 @@ Cornerstone have 2 main goals:
 
 ## 1. Provides reusable skeleton to help set up clean architecture.
 
-The first time I learned clean architecture and applied it to a real-world project, I felt increased confidence in my app maintainability. And the reality is true. Updating things is a pleasant experience. But it's a pain to set up initially. That's why I create cornerstone. It's a library to help me set up clean architecture in a consistent and less-repetitive way. I hope you can also finds it helpful too.
+The first time I learned clean architecture and applied it to a real-world project, I felt increased confidence in my app maintainability. Refactor and feature additions are pleasant experience. But it's a pain to set up initially. That's why I create cornerstone. It's a library to help me set up clean architecture in a consistent and less-repetitive way. I hope you can also find it helpful too.
 
 ## 2. Provides reusable way to implement common use cases.
 
@@ -28,7 +28,6 @@ If you need a more specific use case, you can always write your own implementati
 
 ### Exception Handling
 
-Learning clean architecture from [this](https://resocoder.com/category/tutorials/flutter/tdd-clean-architecture/) tutorial, makes me hate exceptions. Repository is the last layer I need my exceptions to live. It needs to be converted into a nicer model with Failure, utilizing dartz.
+Learning clean architecture from [this](https://resocoder.com/category/tutorials/flutter/tdd-clean-architecture/) tutorial, makes me hate exceptions. Normally, repository is the last layer I want my exceptions to live, so a try catch block should be in the repository functions.
 
 The problem with this approach is each functions in your repository must be wrapped in a try catch block, which subsequently needs to be tested as well. I like to test my apps, doesn't mean that I like to copy-pasted it several times. Multiplies it by... (you know the drill).
-
