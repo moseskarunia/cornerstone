@@ -31,7 +31,7 @@ void main() {
 
   setUp(() {
     client = MockClient();
-    dataSource = PeopleDataSource(client: client);
+    dataSource = PeopleDataSourceImpl(client: client);
   });
 
   test(

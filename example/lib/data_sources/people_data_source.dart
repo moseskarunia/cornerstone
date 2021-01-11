@@ -5,11 +5,14 @@ import 'package:cornerstone/cornerstone.dart';
 import 'package:meta/meta.dart';
 import 'package:dio/dio.dart';
 
-class PeopleDataSource extends MultipleGetterDataSource<Person, Null> {
+abstract class PeopleDataSource extends MultipleGetterDataSource<Person, Null> {
+}
+
+class PeopleDataSourceImpl extends PeopleDataSource {
   /// It'll be better if you interface this client with your own class
   final Dio client;
 
-  PeopleDataSource({@required this.client});
+  PeopleDataSourceImpl({@required this.client});
 
   @override
   FutureOr<List<Person>> readMany({Null param}) async {
