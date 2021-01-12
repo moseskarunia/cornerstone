@@ -30,7 +30,12 @@ class PeopleRepositoryImpl extends PeopleRepository {
 
   Map<String, dynamic> get asJson => _$PeopleRepositoryImplToJson(this);
 
-  PeopleRepositoryImpl({@required this.dataSource, @required this.hive});
+  PeopleRepositoryImpl({
+    @required this.dataSource,
+    @required this.hive,
+    this.data,
+    this.updatedAt,
+  });
 
   @override
   Future<Either<Failure, List<Person>>> getPeople() async {
@@ -46,8 +51,27 @@ class PeopleRepositoryImpl extends PeopleRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> load() {
-    throw UnimplementedError();
+  Future<Either<Failure, Unit>> load() async {
+    try {
+      final box = await hive.openBox(storageName);
+
+      /// For some reason, this is the only safe way I can get box data as
+      /// Map<String, dynamic> consistently. Using cast throws an error.
+      ///
+      /// See this [issue](https://github.com/hivedb/hive/issues/522) if you
+      /// want to get updated on this.
+      final result = box.toMap().map((k, e) => MapEntry(k.toString(), e));
+      final val = _$PeopleRepositoryImplFromJson(result);
+
+      data = val.data;
+      updatedAt = val.updatedAt;
+
+      return Right(unit);
+    } on HiveError catch (e) {
+      return Left(Failure(name: e.message));
+    } catch (e) {
+      return Left(Failure(name: 'UNEXPECTED_ERROR', details: e.toString()));
+    }
   }
 }
 

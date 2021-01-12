@@ -11,26 +11,56 @@ class MockDataSource extends Mock implements PeopleDataSource {}
 
 class MockHive extends Mock implements HiveInterface {}
 
+class MockBox extends Mock implements Box {}
+
 void main() {
+  final jsonListFixture = [
+    <String, dynamic>{
+      'id': 123,
+      'name': 'John Doe',
+      'email': 'johndoe@test.com',
+    },
+    <String, dynamic>{
+      'id': 456,
+      'name': 'Tony Stark',
+      'email': 'tony@starkindustries.com',
+    },
+  ];
   final peopleListFixture = [
     Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
     Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
   ];
+  final dateFixture = DateTime(2020, 10, 10);
+
+  MockBox box;
   MockHive hive;
   MockDataSource dataSource;
   PeopleRepositoryImpl repo;
 
   setUp(() {
+    box = MockBox();
     hive = MockHive();
     dataSource = MockDataSource();
     repo = PeopleRepositoryImpl(
       dataSource: dataSource,
       hive: hive,
     );
+    when(hive.openBox(any)).thenAnswer((_) async => box);
   });
 
   group('PeopleRepositoryImpl', () {
-    test('asJson', () {});
+    test('storageName should be PeopleRepositoryImpl', () {
+      expect(repo.storageName, 'PeopleRepositoryImpl');
+    });
+    test('asJson', () {
+      repo.data = peopleListFixture;
+      repo.updatedAt = dateFixture;
+
+      expect(repo.asJson, <String, dynamic>{
+        'data': jsonListFixture,
+        'updatedAt': dateFixture.toUtc().toIso8601String(),
+      });
+    });
     group('getPeople', () {
       tearDown(() {
         verify(dataSource.readMany()).called(1);
@@ -64,6 +94,51 @@ void main() {
               details: Exception().toString(),
             ),
           );
+        },
+      );
+    });
+
+    group('load', () {
+      tearDown(() {
+        verifyInOrder([
+          hive.openBox(repo.storageName),
+          box.toMap(),
+        ]);
+      });
+      group('should catch', () {
+        test('HiveError and converts it into Failure', () async {
+          when(box.toMap()).thenThrow(HiveError('TEST_ERROR'));
+
+          final result = await repo.load();
+
+          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
+        });
+        test('other Exception and converts it into Failure', () async {
+          when(box.toMap()).thenThrow(Exception());
+
+          final result = await repo.load();
+
+          expect(
+            (result as Left).value,
+            Failure<dynamic>(
+              name: 'UNEXPECTED_ERROR',
+              details: Exception().toString(),
+            ),
+          );
+        });
+      });
+
+      test(
+        'should set loaded data to repo and return unit',
+        () async {
+          when(box.toMap()).thenReturn(<String, dynamic>{
+            'data': jsonListFixture,
+            'updatedAt': dateFixture.toUtc().toIso8601String(),
+          });
+          final result = await repo.load();
+          expect((result as Right).value, unit);
+          expect(repo.updatedAt, dateFixture);
+          expect(repo.data, peopleListFixture);
         },
       );
     });

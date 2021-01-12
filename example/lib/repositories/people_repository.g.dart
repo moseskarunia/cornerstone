@@ -7,13 +7,14 @@ part of 'people_repository.dart';
 // **************************************************************************
 
 PeopleRepositoryImpl _$PeopleRepositoryImplFromJson(Map<String, dynamic> json) {
-  return PeopleRepositoryImpl()
-    ..updatedAt = _$dateTimeFromJson(json['updatedAt'] as String)
-    ..data = (json['data'] as List)
+  return PeopleRepositoryImpl(
+    data: (json['data'] as List)
             ?.map((e) =>
                 e == null ? null : Person.fromJson(e as Map<String, dynamic>))
             ?.toList() ??
-        [];
+        [],
+    updatedAt: _$dateTimeFromJson(json['updatedAt'] as String),
+  );
 }
 
 Map<String, dynamic> _$PeopleRepositoryImplToJson(
