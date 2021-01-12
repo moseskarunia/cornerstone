@@ -12,7 +12,7 @@ class MyUniqueRepo extends LocallyPersistentRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> load() {
+  Future<Either<Failure, Unit>> load() {
     throw UnimplementedError();
   }
 
@@ -31,7 +31,7 @@ class MyNotSoUniqueRepo extends LocallyPersistentRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> load() {
+  Future<Either<Failure, Unit>> load() {
     throw UnimplementedError();
   }
 
@@ -53,7 +53,7 @@ class NulledIdRepo extends LocallyPersistentRepository {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> load() {
+  Future<Either<Failure, Unit>> load() {
     throw UnimplementedError();
   }
 
