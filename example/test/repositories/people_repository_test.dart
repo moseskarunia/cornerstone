@@ -32,6 +32,16 @@ void main() {
   ];
   final dateFixture = DateTime(2020, 10, 10);
 
+  final snapJsonFixture = {
+    'updatedAt': dateFixture.toUtc().toIso8601String(),
+    'data': jsonListFixture,
+  };
+
+  final snapFixture = PeopleSnapshot(
+    data: peopleListFixture,
+    updatedAt: dateFixture,
+  );
+
   MockBox box;
   MockHive hive;
   MockDataSource dataSource;
@@ -48,18 +58,24 @@ void main() {
     when(hive.openBox(any)).thenAnswer((_) async => box);
   });
 
+  group('PeopleSnapshot', () {
+    test('props', () {
+      expect(snapFixture.props, [dateFixture, peopleListFixture]);
+    });
+    test('fromJson', () {
+      expect(PeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
+    });
+    test('toJson', () {
+      expect(snapFixture.toJson(), snapJsonFixture);
+    });
+  });
   group('PeopleRepositoryImpl', () {
     test('storageName should be PeopleRepositoryImpl', () {
       expect(repo.storageName, 'PeopleRepositoryImpl');
     });
     test('asJson', () {
-      repo.data = peopleListFixture;
-      repo.updatedAt = dateFixture;
-
-      expect(repo.asJson, <String, dynamic>{
-        'data': jsonListFixture,
-        'updatedAt': dateFixture.toUtc().toIso8601String(),
-      });
+      repo.data = snapFixture;
+      expect(repo.asJson, snapJsonFixture);
     });
     group('getPeople', () {
       tearDown(() {
@@ -131,14 +147,10 @@ void main() {
       test(
         'should set loaded data to repo and return unit',
         () async {
-          when(box.toMap()).thenReturn(<String, dynamic>{
-            'data': jsonListFixture,
-            'updatedAt': dateFixture.toUtc().toIso8601String(),
-          });
+          when(box.toMap()).thenReturn(snapJsonFixture);
           final result = await repo.load();
           expect((result as Right).value, unit);
-          expect(repo.updatedAt, dateFixture);
-          expect(repo.data, peopleListFixture);
+          expect(repo.data, snapFixture);
         },
       );
     });

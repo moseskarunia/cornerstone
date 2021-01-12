@@ -1,5 +1,6 @@
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/hive_persistence_repository_mixin.dart';
@@ -15,32 +16,42 @@ abstract class PeopleRepository extends LocallyPersistentRepository
 }
 
 @JsonSerializable(explicitToJson: true)
-class PeopleRepositoryImpl extends PeopleRepository {
-  @JsonKey(ignore: true)
-  final PeopleDataSource dataSource;
-
-  @JsonKey(ignore: true)
-  final HiveInterface hive;
-
+class PeopleSnapshot extends Equatable {
   @JsonKey(fromJson: _$dateTimeFromJson, toJson: _$dateTimeToJson)
-  DateTime updatedAt;
+  final DateTime updatedAt;
 
   @JsonKey(defaultValue: [])
-  List<Person> data = [];
+  final List<Person> data;
 
-  Map<String, dynamic> get asJson => _$PeopleRepositoryImplToJson(this);
+  const PeopleSnapshot({this.updatedAt, this.data = const []});
+
+  factory PeopleSnapshot.fromJson(Map<String, dynamic> json) =>
+      _$PeopleSnapshotFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PeopleSnapshotToJson(this);
+
+  @override
+  List<Object> get props => [updatedAt, data];
+}
+
+class PeopleRepositoryImpl extends PeopleRepository {
+  final PeopleDataSource dataSource;
+  final HiveInterface hive;
+
+  PeopleSnapshot data = PeopleSnapshot();
+
+  Map<String, dynamic> get asJson => data.toJson();
 
   PeopleRepositoryImpl({
     @required this.dataSource,
     @required this.hive,
-    this.data,
-    this.updatedAt,
   });
 
   @override
   Future<Either<Failure, List<Person>>> getPeople() async {
     try {
       final results = await dataSource.readMany();
+
       return Right(results);
     } catch (e) {
       return Left(Failure(
@@ -61,10 +72,7 @@ class PeopleRepositoryImpl extends PeopleRepository {
       /// See this [issue](https://github.com/hivedb/hive/issues/522) if you
       /// want to get updated on this.
       final result = box.toMap().map((k, e) => MapEntry(k.toString(), e));
-      final val = _$PeopleRepositoryImplFromJson(result);
-
-      data = val.data;
-      updatedAt = val.updatedAt;
+      data = PeopleSnapshot.fromJson(result);
 
       return Right(unit);
     } on HiveError catch (e) {
