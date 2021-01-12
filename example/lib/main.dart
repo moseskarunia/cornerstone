@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/repositories/people_repository.dart';
+import 'package:example/use_cases/clear_people_storage.dart';
 import 'package:example/use_cases/get_people.dart';
+import 'package:example/use_cases/load_people.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 
@@ -28,4 +30,6 @@ void initArchitecture() {
     () => PeopleRepositoryImpl(dataSource: GetIt.I(), hive: Hive),
   );
   GetIt.I.registerLazySingleton(() => GetPeople(repo: GetIt.I()));
+  GetIt.I.registerLazySingleton(() => LoadPeople(repo: GetIt.I()));
+  GetIt.I.registerLazySingleton(() => ClearPeopleStorage(repo: GetIt.I()));
 }

@@ -5,13 +5,13 @@ import 'package:dartz/dartz.dart';
 import 'package:example/repositories/people_repository.dart';
 import 'package:meta/meta.dart';
 
-/// Call the server and return PeopleSnapshot
-class GetPeople extends UseCase<PeopleSnapshot, Null> {
+/// Clears local storage of people
+class ClearPeopleStorage extends UseCase<Unit, Null> {
   final PeopleRepository repo;
 
-  GetPeople({@required this.repo});
+  ClearPeopleStorage({@required this.repo});
   @override
-  FutureOr<Either<Failure, PeopleSnapshot>> call({Null params}) async {
-    return await repo.getPeople();
+  FutureOr<Either<Failure, Unit>> call({Null params}) async {
+    return await repo.clear();
   }
 }
