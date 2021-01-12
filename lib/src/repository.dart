@@ -44,9 +44,11 @@ abstract class LocallyPersistentRepository {
   Future<Either<Failure, Unit>> clear();
 
   /// The default storageName of your repository. Think of it like a table or
-  /// collection name. By default will use the string of your implementation's
+  /// collection name. Will use the string of your implementation's
   /// runtimeType.
-  @visibleForOverriding
+  ///
+  /// If you need to modify this, override [id] instead.
+  @nonVirtual
   String get storageName => '${this.runtimeType.toString()}${id ?? ''}';
 
   /// If somehow you need more than one repositories with a same type,
