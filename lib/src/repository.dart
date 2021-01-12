@@ -1,5 +1,9 @@
 import 'dart:async';
 
+import 'package:cornerstone/src/failure.dart';
+import 'package:dartz/dartz.dart';
+import 'package:meta/meta.dart';
+
 /// Cachable repository to the local storage.
 ///
 /// I don't think it needs a delete by key function, since if the key is the
@@ -51,22 +55,41 @@ abstract class LocallyPersistentRepository {
   ///
   /// To make dealing with json easier, I recommend
   /// [json_serializable](https://pub.dev/packages/json_serializable)
-  Future<void> write(Map<String, dynamic> json);
+  ///
+  /// Unit is dartz way to represents void, since it's not possible to write
+  /// `Either<Failure, void>`
+  ///
+  /// ```dart
+  /// Right(unit);
+  /// ```
+  @visibleForOverriding
+  Future<Either<Failure, Unit>> write(Map<String, dynamic> json);
 
   /// Load from cache.
   /// To make dealing with json easier, I recommend
   /// [json_serializable](https://pub.dev/packages/json_serializable)
-  Future<Map<String, dynamic>> load();
+  @visibleForOverriding
+  Future<Either<Failure, Map<String, dynamic>>> read();
 
   /// Clear the entire collection of the cache.
-  Future<void> clear();
+  ///
+  /// Unit is dartz way to represents void, since it's not possible to write
+  /// `Either<Failure, void>`
+  ///
+  /// ```dart
+  /// Right(unit);
+  /// ```
+  @visibleForOverriding
+  Future<Either<Failure, Unit>> clear();
 
   /// The default storageName of your repository. Think of it like a table or
   /// collection name. By default will use the string of your implementation's
   /// runtimeType.
+  @visibleForOverriding
   String get storageName => '${this.runtimeType.toString()}$id';
 
   /// If somehow you need more than one repositories with a same type,
   /// you can override [id] to distinguish those.
+  @visibleForOverriding
   String get id => '';
 }

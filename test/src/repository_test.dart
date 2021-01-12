@@ -1,36 +1,38 @@
+import 'package:cornerstone/src/failure.dart';
 import 'package:cornerstone/src/repository.dart';
+import 'package:dartz/dartz.dart';
 import 'package:test/test.dart';
 
 class MyUniqueRepo extends LocallyPersistentRepository {
   @override
-  Future<void> clear() {
+  Future<Either<Failure, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> load() {
+  Future<Either<Failure, Map<String, dynamic>>> read() {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> write(Map<String, dynamic> json) {
+  Future<Either<Failure, Unit>> write(Map<String, dynamic> json) {
     throw UnimplementedError();
   }
 }
 
 class MyNotSoUniqueRepo extends LocallyPersistentRepository {
   @override
-  Future<void> clear() {
+  Future<Either<Failure, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Map<String, dynamic>> load() {
+  Future<Either<Failure, Map<String, dynamic>>> read() {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> write(Map<String, dynamic> json) {
+  Future<Either<Failure, Unit>> write(Map<String, dynamic> json) {
     throw UnimplementedError();
   }
 
