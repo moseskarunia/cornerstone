@@ -3,7 +3,7 @@ import 'package:cornerstone/src/repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:test/test.dart';
 
-class MyUniqueRepo extends LocallyPersistentRepository {
+class MyUniqueRepo extends LocallyPersistentRepository<Map<String, dynamic>> {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
@@ -12,7 +12,7 @@ class MyUniqueRepo extends LocallyPersistentRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> load() {
+  Future<Either<Failure, Map<String, dynamic>>> load() {
     throw UnimplementedError();
   }
 
@@ -31,7 +31,7 @@ class MyNotSoUniqueRepo extends LocallyPersistentRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> load() {
+  Future<Either<Failure, Map<String, dynamic>>> load() {
     throw UnimplementedError();
   }
 
@@ -44,7 +44,7 @@ class MyNotSoUniqueRepo extends LocallyPersistentRepository {
   String get id => 'loremipsum';
 }
 
-class NulledIdRepo extends LocallyPersistentRepository {
+class NulledIdRepo extends LocallyPersistentRepository<Map<String, dynamic>> {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
@@ -53,7 +53,7 @@ class NulledIdRepo extends LocallyPersistentRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> load() {
+  Future<Either<Failure, Map<String, dynamic>>> load() {
     throw UnimplementedError();
   }
 

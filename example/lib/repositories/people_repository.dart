@@ -11,8 +11,9 @@ import 'package:meta/meta.dart';
 
 part 'people_repository.g.dart';
 
-abstract class PeopleRepository extends LocallyPersistentRepository
-    with HivePersistenceRepositoryMixin {
+abstract class PeopleRepository
+    extends LocallyPersistentRepository<PeopleSnapshot>
+    with HivePersistenceRepositoryMixin<PeopleSnapshot> {
   Future<Either<Failure, PeopleSnapshot>> getPeople();
 }
 
@@ -84,7 +85,7 @@ class PeopleRepositoryImpl extends PeopleRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> load() async {
+  Future<Either<Failure, PeopleSnapshot>> load() async {
     try {
       final box = await hive.openBox(storageName);
 
@@ -96,7 +97,7 @@ class PeopleRepositoryImpl extends PeopleRepository {
       final result = box.toMap().map((k, e) => MapEntry(k.toString(), e));
       data = PeopleSnapshot.fromJson(result);
 
-      return Right(unit);
+      return Right(data);
     } on HiveError catch (e) {
       return Left(Failure(name: e.message));
     } catch (e) {

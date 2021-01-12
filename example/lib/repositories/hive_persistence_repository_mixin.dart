@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
-mixin HivePersistenceRepositoryMixin on LocallyPersistentRepository {
+mixin HivePersistenceRepositoryMixin<T> on LocallyPersistentRepository<T> {
   HiveInterface get hive;
 
   @override

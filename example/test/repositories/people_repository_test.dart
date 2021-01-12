@@ -1,6 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/people_repository.dart';
@@ -184,15 +185,27 @@ void main() {
         });
       });
 
-      test(
-        'should set loaded data to repo and return unit',
-        () async {
-          when(box.toMap()).thenReturn(snapJsonFixture);
-          final result = await repo.load();
-          expect((result as Right).value, unit);
-          expect(repo.data, snapFixture);
-        },
-      );
+      test('should set loaded data to repo and return the data', () async {
+        EquatableConfig.stringify = true;
+        when(box.toMap()).thenReturn({...snapJsonFixture, 'isSaved': true});
+        final result = await repo.load();
+        expect(
+          repo.data,
+          PeopleSnapshot(
+            data: peopleListFixture,
+            updatedAt: dateFixture,
+            isSaved: true,
+          ),
+        );
+        expect(
+          (result as Right).value,
+          PeopleSnapshot(
+            data: peopleListFixture,
+            updatedAt: dateFixture,
+            isSaved: true,
+          ),
+        );
+      });
     });
   });
 }

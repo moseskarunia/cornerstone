@@ -17,7 +17,7 @@ import 'package:meta/meta.dart';
 ///
 /// For usage example, check the example project.
 /// ```
-abstract class LocallyPersistentRepository {
+abstract class LocallyPersistentRepository<T> {
   /// Write the repository fields you want to persist locally. The key should
   /// matches the fieldName of those fields.
   ///
@@ -34,7 +34,9 @@ abstract class LocallyPersistentRepository {
   /// ```
   Future<Either<Failure, Unit>> save();
 
-  /// Read from local storage.
+  /// Read from local storage, assign it to repo, and return the data.
+  /// You can use this function to get data from local storage without
+  /// calling the server.
   ///
   /// To make dealing with json easier, I recommend
   /// [json_serializable](https://pub.dev/packages/json_serializable)
@@ -45,7 +47,7 @@ abstract class LocallyPersistentRepository {
   /// ```dart
   /// Right(unit);
   /// ```
-  Future<Either<Failure, Unit>> load();
+  Future<Either<Failure, T>> load();
 
   /// Clear the local storage.
   ///
