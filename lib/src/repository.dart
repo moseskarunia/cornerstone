@@ -15,63 +15,24 @@ import 'package:meta/meta.dart';
 /// To make dealing with json easier, I recommend
 /// [json_serializable](https://pub.dev/packages/json_serializable)
 ///
-/// Sample implementation:
-/// ```dart
-/// mixin MyCachableRepoMixin implements DataCacheRepository {
-///   /// Your implementation
-/// }
-///
-/// class MyRepo with MyCachableRepoMixin {
-///   List<int> myIntegers;
-///   DateTime lastUpdated;
-///
-///   Future<void> save() async {
-///     await write(<String,dynamic>{
-///       'myIntegers': myIntegers,
-///       'lastUpdated' : lastUpdated.toIso8601String(),
-///     });
-///   }
-///
-///   Future<void> load() async {
-///     final loadedData = await load();
-///
-///     if(loadedData == null){
-///       return;
-///     }
-///
-///     this.myIntegers = loadedData['myIntegers'] ?? [];
-///     this.lastUpdated = DateTime.tryParse(loadedData['lastUpdated']);
-///   }
-///
-///    /// Other codes
-/// }
+/// For usage example, check the example project.
 /// ```
 abstract class LocallyPersistentRepository {
-  /// Write the repository fields you want to cache locally. The key should
+  /// Write the repository fields you want to persist locally. The key should
   /// matches the fieldName of those fields.
   ///
-  /// [json]'s value should only contains
-  /// [json-valid values](https://www.w3schools.com/js/js_json_datatypes.asp)
+  /// Override [asJson] to provide value for this function.
+  @visibleForOverriding
+  Future<Either<Failure, Unit>> save();
+
+  /// Read from local storage.
   ///
   /// To make dealing with json easier, I recommend
   /// [json_serializable](https://pub.dev/packages/json_serializable)
-  ///
-  /// Unit is dartz way to represents void, since it's not possible to write
-  /// `Either<Failure, void>`
-  ///
-  /// ```dart
-  /// Right(unit);
-  /// ```
   @visibleForOverriding
-  Future<Either<Failure, Unit>> write(Map<String, dynamic> json);
+  Future<Either<Failure, Map<String, dynamic>>> load();
 
-  /// Load from cache.
-  /// To make dealing with json easier, I recommend
-  /// [json_serializable](https://pub.dev/packages/json_serializable)
-  @visibleForOverriding
-  Future<Either<Failure, Map<String, dynamic>>> read();
-
-  /// Clear the entire collection of the cache.
+  /// Clear the local storage.
   ///
   /// Unit is dartz way to represents void, since it's not possible to write
   /// `Either<Failure, void>`
@@ -92,4 +53,24 @@ abstract class LocallyPersistentRepository {
   /// you can override [id] to distinguish those.
   @visibleForOverriding
   String get id => '';
+
+  /// Repo data as Map<String,dynamic> (json).
+  ///
+  /// [json]'s value should only contains
+  /// [json-valid values](https://www.w3schools.com/js/js_json_datatypes.asp)
+  ///
+  /// To make dealing with json easier, I recommend
+  /// [json_serializable](https://pub.dev/packages/json_serializable)
+  ///
+  /// Unit is dartz way to represents void, since it's not possible to write
+  /// `Either<Failure, void>`
+  ///
+  /// ```dart
+  /// Right(unit);
+  /// ```
+  ///
+  /// To make dealing with json easier, I recommend using
+  /// [json_serializable](https://pub.dev/packages/json_serializable)
+  @visibleForOverriding
+  Map<String, dynamic> get asJson;
 }

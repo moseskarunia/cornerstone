@@ -17,6 +17,7 @@ dependencies:
   equatable: ^1.2.5
   json_annotation: ^3.0.1
   get_it: ^5.0.4
+  hive: ^1.4.4
   meta: ^1.2.4
 
 dev_dependencies:

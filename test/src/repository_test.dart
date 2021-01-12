@@ -4,35 +4,39 @@ import 'package:dartz/dartz.dart';
 import 'package:test/test.dart';
 
 class MyUniqueRepo extends LocallyPersistentRepository {
+  Map<String, dynamic> get asJson => <String, dynamic>{};
+
   @override
   Future<Either<Failure, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> read() {
+  Future<Either<Failure, Map<String, dynamic>>> load() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, Unit>> write(Map<String, dynamic> json) {
+  Future<Either<Failure, Unit>> save() {
     throw UnimplementedError();
   }
 }
 
 class MyNotSoUniqueRepo extends LocallyPersistentRepository {
+  Map<String, dynamic> get asJson => <String, dynamic>{};
+
   @override
   Future<Either<Failure, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> read() {
+  Future<Either<Failure, Map<String, dynamic>>> load() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, Unit>> write(Map<String, dynamic> json) {
+  Future<Either<Failure, Unit>> save() {
     throw UnimplementedError();
   }
 

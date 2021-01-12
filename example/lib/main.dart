@@ -4,6 +4,7 @@ import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/repositories/people_repositories.dart';
 import 'package:example/use_cases/get_people.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive/hive.dart';
 
 void main() async {
   initArchitecture();
@@ -24,7 +25,7 @@ void initArchitecture() {
     () => PeopleDataSourceImpl(client: GetIt.I()),
   );
   GetIt.I.registerLazySingleton<PeopleRepository>(
-    () => PeopleRepositoryImpl(dataSource: GetIt.I()),
+    () => PeopleRepositoryImpl(dataSource: GetIt.I(), hive: Hive),
   );
   GetIt.I.registerLazySingleton(() => GetPeople(repo: GetIt.I()));
 }
