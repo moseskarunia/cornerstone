@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
-import 'package:example/repositories/people_repositories.dart';
+import 'package:example/repositories/people_repository.dart';
 import 'package:meta/meta.dart';
 
 class GetPeople extends UseCase<List<Person>, Null> {

@@ -18,7 +18,7 @@ class MyRepo extends LocallyPersistentRepository
   Map<String, dynamic> get asJson => {'fruits': fruits};
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> load() {
+  Future<Either<Failure, Unit>> load() {
     throw UnimplementedError();
   }
 }

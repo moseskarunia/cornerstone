@@ -31,3 +31,21 @@ If you need a more specific use case, you can always write your own implementati
 Learning clean architecture from [this](https://resocoder.com/category/tutorials/flutter/tdd-clean-architecture/) tutorial, makes me hate exceptions. Normally, repository is the last layer I want my exceptions to live, so a try catch block should be in the repository functions.
 
 The problem with this approach is each functions in your repository must be wrapped in a try catch block, which subsequently needs to be tested as well. I like to test my apps, doesn't mean that I like to copy-pasted it several times. Multiplies it by... (you know the drill).
+
+In the next update, I plan on writing a helper function to automatically wraps function to directly transforms it into Failure model without having to repeatedly write test for it.
+
+Maybe something like:
+
+```dart
+class CallSafely {
+  FutureOr<Either<Failure,T>> call<P>({@required T Function(P) f, P param}){
+    try {
+      return Right(await f(param));
+    } on CommonException catch (e) {
+      return Left(Failure(name: e.name, e.details));
+    } catch (e) {
+      return Left(Failure(name:'UNEXPECTED_ERROR', details: e.toString()));
+    }
+  }
+}
+```

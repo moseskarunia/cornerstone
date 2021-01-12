@@ -2,7 +2,7 @@ import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
-import 'package:example/repositories/people_repositories.dart';
+import 'package:example/repositories/people_repository.dart';
 import 'package:hive/hive.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -30,6 +30,7 @@ void main() {
   });
 
   group('PeopleRepositoryImpl', () {
+    test('asJson', () {});
     group('getPeople', () {
       tearDown(() {
         verify(dataSource.readMany()).called(1);

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
-import 'package:example/repositories/people_repositories.dart';
+import 'package:example/repositories/people_repository.dart';
 import 'package:example/use_cases/get_people.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';

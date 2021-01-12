@@ -1,7 +1,7 @@
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
-import 'package:example/repositories/people_repositories.dart';
+import 'package:example/repositories/people_repository.dart';
 import 'package:example/use_cases/get_people.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
