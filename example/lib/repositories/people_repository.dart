@@ -17,7 +17,13 @@ abstract class PeopleRepository
   Future<Either<Failure, PeopleSnapshot>> getPeople();
 }
 
-@JsonSerializable(explicitToJson: true)
+/// Remember to use `anyMap: true` if you use Hive because otherwise will throw:
+///
+/// ```sh
+/// type '_InternalLinkedHashMap<dynamic, dynamic>' is not a subtype of type
+/// 'Map<String, dynamic>' in type cast)
+/// ```
+@JsonSerializable(explicitToJson: true, checked: true, anyMap: true)
 class PeopleSnapshot extends Equatable {
   @JsonKey(fromJson: _$dateTimeFromJson, toJson: _$dateTimeToJson)
   final DateTime updatedAt;
@@ -34,8 +40,7 @@ class PeopleSnapshot extends Equatable {
     this.isSaved = false,
   });
 
-  factory PeopleSnapshot.fromJson(Map<String, dynamic> json) =>
-      _$PeopleSnapshotFromJson(json);
+  factory PeopleSnapshot.fromJson(Map json) => _$PeopleSnapshotFromJson(json);
 
   Map<String, dynamic> toJson() => _$PeopleSnapshotToJson(this);
 

@@ -41,3 +41,4 @@ app.*.map.json
 
 pubspec.lock
 coverage/
+db/

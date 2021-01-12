@@ -3,7 +3,13 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'person.g.dart';
 
-@JsonSerializable()
+/// Remember to use `anyMap: true` if you use Hive because otherwise will throw:
+///
+/// ```sh
+/// type '_InternalLinkedHashMap<dynamic, dynamic>' is not a subtype of type
+/// 'Map<String, dynamic>' in type cast)
+/// ```
+@JsonSerializable(checked: true, anyMap: true)
 class Person extends Equatable {
   final int id;
   final String name, email;
@@ -13,6 +19,6 @@ class Person extends Equatable {
   @override
   List<Object> get props => [id, name, email];
 
-  factory Person.fromJson(Map<String, dynamic> json) => _$PersonFromJson(json);
+  factory Person.fromJson(Map json) => _$PersonFromJson(json);
   Map<String, dynamic> toJson() => _$PersonToJson(this);
 }
