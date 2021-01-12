@@ -44,6 +44,28 @@ class MyNotSoUniqueRepo extends LocallyPersistentRepository {
   String get id => 'loremipsum';
 }
 
+class NulledIdRepo extends LocallyPersistentRepository {
+  Map<String, dynamic> get asJson => <String, dynamic>{};
+
+  @override
+  Future<Either<Failure, Unit>> clear() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> load() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Unit>> save() {
+    throw UnimplementedError();
+  }
+
+  @override
+  String get id => null;
+}
+
 void main() {
   group('LocallyPersistedRepository', () {
     test(
@@ -63,6 +85,13 @@ void main() {
       'appended with overrided id value',
       () {
         expect(MyNotSoUniqueRepo().storageName, 'MyNotSoUniqueRepoloremipsum');
+      },
+    );
+
+    test(
+      'if id is null, should treat it as empty string in storageName',
+      () {
+        expect(NulledIdRepo().storageName, 'NulledIdRepo');
       },
     );
   });

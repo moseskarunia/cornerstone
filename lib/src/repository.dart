@@ -47,7 +47,7 @@ abstract class LocallyPersistentRepository {
   /// collection name. By default will use the string of your implementation's
   /// runtimeType.
   @visibleForOverriding
-  String get storageName => '${this.runtimeType.toString()}$id';
+  String get storageName => '${this.runtimeType.toString()}${id ?? ''}';
 
   /// If somehow you need more than one repositories with a same type,
   /// you can override [id] to distinguish those.
