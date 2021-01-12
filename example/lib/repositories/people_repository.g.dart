@@ -14,6 +14,7 @@ PeopleSnapshot _$PeopleSnapshotFromJson(Map<String, dynamic> json) {
                 e == null ? null : Person.fromJson(e as Map<String, dynamic>))
             ?.toList() ??
         [],
+    isSaved: json['isSaved'] as bool ?? false,
   );
 }
 
@@ -21,4 +22,5 @@ Map<String, dynamic> _$PeopleSnapshotToJson(PeopleSnapshot instance) =>
     <String, dynamic>{
       'updatedAt': _$dateTimeToJson(instance.updatedAt),
       'data': instance.data?.map((e) => e?.toJson())?.toList(),
+      'isSaved': instance.isSaved,
     };

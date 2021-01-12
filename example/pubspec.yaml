@@ -9,6 +9,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  clock: ^1.0.1
   copy_with_extension: ">=1.2.0 <2.0.0"
   cornerstone:
     path: ../

@@ -1,5 +1,7 @@
+import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/people_repository.dart';
@@ -35,6 +37,7 @@ void main() {
   final snapJsonFixture = {
     'updatedAt': dateFixture.toUtc().toIso8601String(),
     'data': jsonListFixture,
+    'isSaved': false,
   };
 
   final snapFixture = PeopleSnapshot(
@@ -54,13 +57,14 @@ void main() {
     repo = PeopleRepositoryImpl(
       dataSource: dataSource,
       hive: hive,
+      clock: Clock.fixed(DateTime(2020, 10, 10)),
     );
     when(hive.openBox(any)).thenAnswer((_) async => box);
   });
 
   group('PeopleSnapshot', () {
     test('props', () {
-      expect(snapFixture.props, [dateFixture, peopleListFixture]);
+      expect(snapFixture.props, [dateFixture, false, peopleListFixture]);
     });
     test('fromJson', () {
       expect(PeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
@@ -78,11 +82,8 @@ void main() {
       expect(repo.asJson, snapJsonFixture);
     });
     group('getPeople', () {
-      tearDown(() {
-        verify(dataSource.readMany()).called(1);
-      });
       test(
-        'should return Right with list of people',
+        'should return Right with PeopleSnapshot and isSaved',
         () async {
           when(dataSource.readMany(param: anyNamed('param'))).thenAnswer(
             (_) async => peopleListFixture,
@@ -90,7 +91,45 @@ void main() {
 
           final result = await repo.getPeople();
 
-          expect((result as Right).value, peopleListFixture);
+          expect(
+            (result as Right).value,
+            PeopleSnapshot(
+              data: peopleListFixture,
+              updatedAt: dateFixture,
+              isSaved: true,
+            ),
+          );
+          verifyInOrder([
+            dataSource.readMany(),
+            hive.openBox(repo.storageName),
+            box.putAll(<String, dynamic>{...snapJsonFixture, 'isSaved': true}),
+          ]);
+        },
+      );
+
+      test(
+        'should return Right with PeopleSnapshot and !isSaved',
+        () async {
+          when(dataSource.readMany(param: anyNamed('param'))).thenAnswer(
+            (_) async => peopleListFixture,
+          );
+          when(box.putAll(any)).thenThrow(HiveError('TEST_ERROR'));
+
+          final result = await repo.getPeople();
+
+          expect(
+            (result as Right).value,
+            PeopleSnapshot(
+              data: peopleListFixture,
+              updatedAt: dateFixture,
+              isSaved: false,
+            ),
+          );
+          verifyInOrder([
+            dataSource.readMany(),
+            hive.openBox(repo.storageName),
+            box.putAll(<String, dynamic>{...snapJsonFixture, 'isSaved': true}),
+          ]);
         },
       );
 
@@ -110,6 +149,8 @@ void main() {
               details: Exception().toString(),
             ),
           );
+
+          verify(dataSource.readMany()).called(1);
         },
       );
     });

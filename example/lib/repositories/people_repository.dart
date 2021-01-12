@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
@@ -12,7 +13,7 @@ part 'people_repository.g.dart';
 
 abstract class PeopleRepository extends LocallyPersistentRepository
     with HivePersistenceRepositoryMixin {
-  Future<Either<Failure, List<Person>>> getPeople();
+  Future<Either<Failure, PeopleSnapshot>> getPeople();
 }
 
 @JsonSerializable(explicitToJson: true)
@@ -23,7 +24,14 @@ class PeopleSnapshot extends Equatable {
   @JsonKey(defaultValue: [])
   final List<Person> data;
 
-  const PeopleSnapshot({this.updatedAt, this.data = const []});
+  @JsonKey(defaultValue: false)
+  final bool isSaved;
+
+  const PeopleSnapshot({
+    this.updatedAt,
+    this.data = const [],
+    this.isSaved = false,
+  });
 
   factory PeopleSnapshot.fromJson(Map<String, dynamic> json) =>
       _$PeopleSnapshotFromJson(json);
@@ -31,12 +39,13 @@ class PeopleSnapshot extends Equatable {
   Map<String, dynamic> toJson() => _$PeopleSnapshotToJson(this);
 
   @override
-  List<Object> get props => [updatedAt, data];
+  List<Object> get props => [updatedAt, isSaved, data];
 }
 
 class PeopleRepositoryImpl extends PeopleRepository {
   final PeopleDataSource dataSource;
   final HiveInterface hive;
+  final Clock clock;
 
   PeopleSnapshot data = PeopleSnapshot();
 
@@ -45,14 +54,27 @@ class PeopleRepositoryImpl extends PeopleRepository {
   PeopleRepositoryImpl({
     @required this.dataSource,
     @required this.hive,
+    this.clock = const Clock(),
   });
 
   @override
-  Future<Either<Failure, List<Person>>> getPeople() async {
+  Future<Either<Failure, PeopleSnapshot>> getPeople() async {
     try {
       final results = await dataSource.readMany();
 
-      return Right(results);
+      data = PeopleSnapshot(
+        data: results,
+        updatedAt: clock.now(),
+        isSaved: true,
+      );
+
+      final saveResult = await save();
+
+      if (saveResult.isLeft()) {
+        data = PeopleSnapshot(data: data.data, updatedAt: data.updatedAt);
+      }
+
+      return Right(data);
     } catch (e) {
       return Left(Failure(
         name: 'FAILED_TO_RETRIEVE_DATA',
