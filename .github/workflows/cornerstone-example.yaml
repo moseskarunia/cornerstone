@@ -1,4 +1,4 @@
-name: cornerstone
+name: cornerstone-example
 
 on:
   push:
