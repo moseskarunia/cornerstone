@@ -27,9 +27,9 @@ jobs:
       - name: Install dependencies
         run: pub get
       - name: Format
-        run: dartfmt --dry-run --set-exit-if-changed .
+        run: dartfmt --dry-run --set-exit-if-changed lib test
       - name: Analyze
-        run: dart analyze --fatal-infos --fatal-warnings .
+        run: dart analyze --fatal-infos --fatal-warnings lib test
       - name: Test
         run: dart test --coverage=coverage && pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
       - name: Check Code Coverage
