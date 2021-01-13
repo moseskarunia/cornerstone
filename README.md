@@ -28,6 +28,74 @@ Disclaimer: Even if I would say cornerstone is inspired from Clean Architecture,
 
 <img src="https://raw.githubusercontent.com/moseskarunia/cornerstone/master/graphics/architecture.png" alt="Cornerstone Architecture">
 
+## Platform (The left most with black background)
 
+Platform is the "outside world". This includes server, database, 3rd party libraries, firebase, and such. It'll be better if you use interface to interacts with platform. This makes it easier to achieve layer independency. If you do, I also recommend you handle platform exceptions and transform them into your app's common exception type. This makes it easier to handle those Exceptions in repository.
 
+I didn't use platform interface in my example project to make it simpler.
+
+Sample usage of platform interface:
+
+```dart
+abstract class CleanHttpClient {
+  FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams});
+}
+
+class DioCleanHttpClient extends CleanHttpClient {
+  final Dio dio;
+
+  const DioCleanHttpClient({@required this.dio});
+
+  FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams}) async {
+    // TODO: implement get to dio.
+  }
+}
+```
+
+I don't provide the abstract for it (at least yet) because it's easier to implement it yourself to match your need.
+
+## Data Source
+
+Data source acts as the gateway to the "outside world" such as server (through API), database, and other third party libraries. Data source usually interacts with platform libraries, such as `HttpClient`, `Dio`, `Hive`, `SharedPreference` etc.
+
+With that being said, it might be better if you make your data sources interact with platform through a platform interface. So, for example, if you need to switch from `SharedPreference` to `Hive` as your local storage solution, you can easily do so without directly impacts your data sources.
+
+Remember that you need to make an abstract of your data sources to be used as repository dependency.
+
+-----
+
+In Cornerstone, there are 5 kinds of abstract data sources to mix and match.
+- `SingleGetterDataSource`
+- `MultipleGetterDataSource`
+- `CreatorDataSource`
+- `UpdaterDataSource`
+- `DeleterDataSource`
+
+For example, if you only need your data source to GET and CREATE, you can write it like:
+
+```dart
+abstract class PeopleDataSource 
+  implements MultipleGetterDataSource<Person, Null>, CreatorDataSource<Person,Person>{}
+
+class PeopleDataSourceImpl extends PeopleDataSource {
+  final Dio client;
+
+  PeopleDataSourceImpl({@required this.client});
+
+  @override
+  FutureOr<List<Person>> readMany({Null param}) async {
+    // TODO: implement readMany
+  }
+
+  @override
+  FutureOr<Person> create({Person param}) {
+    // TODO: implement create
+  }
+}
+
+```
+
+See docs and example project to learn more.
+
+## Repository
 
