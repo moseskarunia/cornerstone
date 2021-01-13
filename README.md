@@ -26,7 +26,7 @@ That's why I plan to write some implementations of cornerstone abstracts for com
 
 Disclaimer: Even if I would say cornerstone is inspired from Clean Architecture, I wouldn't say that it adheres purely to clean architecture. You can see the complete app I made in the example folder for more details. It's a command line / terminal app written in pure dart.
 
-<img src="https://raw.githubusercontent.com/moseskarunia/cornerstone/master/graphics/architecture.png" alt="Cornerstone Architecture" height="256">
+<img src="https://raw.githubusercontent.com/moseskarunia/cornerstone/master/graphics/architecture.png" alt="Cornerstone Architecture">
 
 
 
