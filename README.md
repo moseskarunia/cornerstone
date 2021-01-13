@@ -34,7 +34,7 @@ Platform is the "outside world". This includes server, database, 3rd party libra
 
 I didn't use platform interface in my example project to make it simpler.
 
-Sample usage of platform interface:
+Sample platform interface:
 
 ```dart
 abstract class CleanHttpClient {
@@ -47,7 +47,7 @@ class DioCleanHttpClient extends CleanHttpClient {
   const DioCleanHttpClient({@required this.dio});
 
   FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams}) async {
-    // TODO: implement get to dio.
+    // TODO: implement get for dio.
   }
 }
 ```
