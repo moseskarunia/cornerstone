@@ -1,6 +1,6 @@
 # Cornerstone
 
-Set up your app development with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
+A library written in pure dart to help devs set up dart projects with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
 
 # Objectives
 
@@ -197,3 +197,19 @@ void initArchitecture() {
   initUseCases();
 }
 ```
+
+# What's next?
+- Stream abstracts
+- More common use cases implementations
+
+# Support
+
+I will appreciate any star to the github repo as well as like to the pub.dev page of this library. If you want, you can also buy me a cup of coffee by clicking the button below to motivate me creating helpful libraries in the future! Thanks for your support!
+
+<a href="https://www.buymeacoffee.com/moseskarunia" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="50"></a>
+
+I also welcome if anyone want to collaborate with me in this project. The more the merrier!
+
+# Why "Cornerstone"?
+
+> The cornerstone (or foundation stone or setting stone) is the first stone set in the construction of a masonry foundation. All other stones will be set in reference to this stone, thus determining the position of the entire structure. ([Wikipedia](https://en.wikipedia.org/wiki/Cornerstone))
