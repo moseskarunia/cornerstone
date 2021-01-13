@@ -1,0 +1,31 @@
+name: example
+description: Cornerstone implementation in a pure dart app
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  clock: ^1.0.1
+  copy_with_extension: ">=1.2.0 <2.0.0"
+  cornerstone:
+    path: ../
+  dartz: ^0.9.1
+  dio: ^3.0.10
+  equatable: ^1.2.5
+  json_annotation: ^3.0.1
+  get_it: ^5.0.4
+  hive: ^1.4.4
+  intl: ^0.16.1
+  meta: ^1.2.4
+
+dev_dependencies:
+  build_runner: ">=1.0.0 <2.0.0"
+  copy_with_extension_gen: ">=1.2.0 <2.0.0"
+  coverage: ^0.14.1
+  json_serializable: ^3.3.0
+  mockito: ^4.1.1
+  test: ^1.14.6
