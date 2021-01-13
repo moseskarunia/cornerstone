@@ -5,7 +5,7 @@ on:
     branches: [master]    
     paths:
       - "example/**"
-      - ".github/workflows/cornerstone.yaml"
+      - ".github/workflows/cornerstone-example.yaml"
   pull_request:
     branches: [master]    
     paths:
