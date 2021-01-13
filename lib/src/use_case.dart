@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cornerstone/src/failure.dart';
 import 'package:dartz/dartz.dart';
 
 /// Use case contains the app's business logic / rules, e.g. validations.
@@ -12,6 +11,6 @@ import 'package:dartz/dartz.dart';
 ///
 /// If you can live with less static typing, you can use `Map<String,dynamic`
 /// as Params.
-abstract class UseCase<Type, Params> {
-  FutureOr<Either<Failure, Type>> call({Params params});
+abstract class UseCase<F, Type, Param> {
+  FutureOr<Either<F, Type>> call({Param param});
 }
