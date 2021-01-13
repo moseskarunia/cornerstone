@@ -28,6 +28,8 @@ Disclaimer: Even if I would say cornerstone is inspired from Clean Architecture,
 
 <img src="https://raw.githubusercontent.com/moseskarunia/cornerstone/master/graphics/architecture.png" alt="Cornerstone Architecture">
 
+In this section, I will focus on explaining this library interpretation. So, I recommend to read [this](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) article for more comprehensive understanding regarding clean architecture.
+
 ## Platform (The left most with black background)
 
 Platform is the "outside world". This includes server, database, 3rd party libraries, firebase, and such. It'll be better if you use interface to interacts with platform. This makes it easier to achieve layer independency. If you do, I also recommend you handle platform exceptions and transform them into your app's common exception type. This makes it easier to handle those Exceptions in repository.
@@ -92,10 +94,106 @@ class PeopleDataSourceImpl extends PeopleDataSource {
     // TODO: implement create
   }
 }
-
 ```
 
 See docs and example project to learn more.
 
 ## Repository
 
+Repository acts as the hub of several data sources. For example if you have more than 1 servers, repository is the place where I would put the logic of the fetching strategy (or data source calling strategy to be more precise).
+
+Another thing it does is exception handling. In your repository, you should catch your exceptions, transform it into Failure model and returns it as `Left` value with [dartz](https://pub.dev/packages/dartz). This makes you don't need to always put try catch block in the subsequent layers.
+
+Like data source, you need to write an abstract first since your use cases will interacts with repository through interface.
+
+### About LocallyPersistentRepository
+
+Some of you might prefer to put local-persistence strategy in the data source. And it's ok since in my older projects, that's also what I did. But, after further considerations, I decided to name cornerstone's local-persistence strategy abstract class as a "Repository" instead of "Data Source". Because for my taste, persisting data can be considered as a "repository thing". Also, with this approach, I think it will make the code easier to read as well since it will produce a clearer separation of concerns like:
+
+- Data source: retrieving data
+- Repository: managing retrieved data
+
+In my example project, I implement `LocallyPersistentRepository` as a mixin. This way, you can reuse your local persistence logic, or even not using it at all if you don't want to implement persistence for your repo.
+
+## Use Case
+
+Use case is where your app's business logics and validations live. This layer should be independent regardless database, or presentation logic. The idea is that, use case will only change if your business process changes.
+
+Use case can depend / call another use case. This way, it'll be better to keep 1 use case as single-concerned as possible.
+
+# Knitting them together
+
+There are several way to knit / put those layers together. First, is by using something like `InheritedWidget`. But for me, I prefer to use a service locator library called [Get It](https://pub.dev/packages/get_it).
+
+This is how I did it in my example project:
+
+```dart
+void initArchitecture() {
+  EquatableConfig.stringify = true;
+
+  Hive.init(Directory.current.path + '/db');
+
+  GetIt.I.registerLazySingleton(() => Dio());
+  GetIt.I.registerLazySingleton<PeopleDataSource>(
+    () => PeopleDataSourceImpl(client: GetIt.I()),
+  );
+  GetIt.I.registerLazySingleton<PeopleRepository>(
+    () => PeopleRepositoryImpl(dataSource: GetIt.I(), hive: Hive),
+  );
+  GetIt.I.registerLazySingleton(() => GetPeople(repo: GetIt.I()));
+  GetIt.I.registerLazySingleton(() => LoadPeople(repo: GetIt.I()));
+  GetIt.I.registerLazySingleton(() => ClearPeopleStorage(repo: GetIt.I()));
+}
+```
+
+And then, I simply call it from main like:
+
+```dart
+void main() async {
+  initArchitecture();
+
+  /// Rest of the code
+}
+```
+
+-----
+
+In a larger project though, it's recommended to split it into several initializator from several files to make it more readable, maybe something like:
+
+```dart
+/// Somewhere under lib/platforms
+void initPlatforms() {
+  EquatableConfig.stringify = true;
+  Hive.init(Directory.current.path + '/db');
+  GetIt.I.registerLazySingleton(() => Dio());
+}
+
+/// Somewhere under lib/data_sources
+void initDataSources() {
+  GetIt.I.registerLazySingleton<PeopleDataSource>(
+    () => PeopleDataSourceImpl(client: GetIt.I()),
+  );
+}
+
+/// Somewhere under lib/repositories
+void initRepositories() {
+  GetIt.I.registerLazySingleton<PeopleRepository>(
+    () => PeopleRepositoryImpl(dataSource: GetIt.I(), hive: Hive),
+  );
+}
+
+/// Somewhere under lib/use_cases
+void initUseCases() {
+  GetIt.I.registerLazySingleton(() => GetPeople(repo: GetIt.I()));
+  GetIt.I.registerLazySingleton(() => LoadPeople(repo: GetIt.I()));
+  GetIt.I.registerLazySingleton(() => ClearPeopleStorage(repo: GetIt.I()));
+}
+
+/// Somewhere under lib
+void initArchitecture() {
+  initPlatforms();
+  initDataSources();
+  initRepositories();
+  initUseCases();
+}
+```
