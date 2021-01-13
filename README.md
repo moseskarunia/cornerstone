@@ -1,5 +1,7 @@
 # Cornerstone
 
+![cornerstone](https://github.com/moseskarunia/cornerstone/workflows/cornerstone/badge.svg?branch=master) [![codecov](https://codecov.io/gh/moseskarunia/cornerstone/branch/master/graph/badge.svg?token=5YRJCADULI)](https://codecov.io/gh/moseskarunia/cornerstone) [![pub package](https://img.shields.io/pub/v/cornerstone.svg)](https://pub.dev/packages/cornerstone)
+
 A library written in pure dart to help devs set up dart projects with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
 
 # Objectives
