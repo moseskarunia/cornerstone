@@ -3,21 +3,20 @@ name: cornerstone
 on:
   push:
     branches: [master]    
-    paths-ignore:
-      - "README.md"
-      - "graphics/**"
-      - ".github/workflows/cornerstone-example.yaml"
+    paths:
       - "example/**"
+      - ".github/workflows/cornerstone.yaml"
   pull_request:
     branches: [master]    
-    paths-ignore:
-      - "README.md"
-      - "graphics/**"
-      - ".github/workflows/cornerstone-example.yaml"
+    paths:
       - "example/**"
+      - ".github/workflows/cornerstone-example.yaml"
 
 jobs:
-  build:
+  build:    
+    defaults:
+      run:
+        working-directory: example
     runs-on: ubuntu-latest
     container:
       image: google/dart:2.10.0
