@@ -4,13 +4,17 @@ on:
   push:
     branches: [master]    
     paths-ignore:
-      - 'README.md'
-      - 'graphics/**'
+      - "README.md"
+      - "graphics/**"
+      - ".github/workflows/cornerstone-example.yaml"
+      - "example/**"
   pull_request:
     branches: [master]    
     paths-ignore:
-      - 'README.md'
-      - 'graphics/**'
+      - "README.md"
+      - "graphics/**"
+      - ".github/workflows/cornerstone-example.yaml"
+      - "example/**"
 
 jobs:
   build:
@@ -23,18 +27,18 @@ jobs:
       - name: Install dependencies
         run: pub get
       - name: Format
-        run: dartfmt --dry-run --set-exit-if-changed .
+        run: dartfmt --dry-run --set-exit-if-changed lib test
       - name: Analyze
-        run: dart analyze --fatal-infos --fatal-warnings .
+        run: dart analyze --fatal-infos --fatal-warnings lib && dart analyze --fatal-infos --fatal-warnings test
       - name: Test
         run: dart test --coverage=coverage && pub run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.packages --report-on=lib
       - name: Check Code Coverage
         uses: ChicagoFlutter/lcov-cop@v1.0.0
         with:
           path: coverage/lcov.info
-      # - name: Upload coverage to Codecov
-      #   uses: codecov/codecov-action@v1
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Dry Run Publish to Pub Dev
         run: pub publish --dry-run
