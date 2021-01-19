@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 /// On the other hand, don't add [clock].
 abstract class CornerstoneSnapshot extends Equatable {
   /// Already annotated with
-  /// `@JsonKey(ignore: true, defaultValue: const Clock())` so won't mess with
+  /// `@JsonKey(ignore: true)` so won't mess with
   /// your `@JsonSerializable`
   ///
   ///
@@ -16,7 +16,7 @@ abstract class CornerstoneSnapshot extends Equatable {
   /// is impossible to test without sacrificing some coverage.
   ///
   /// By default will use `const Clock()`.
-  @JsonKey(ignore: true, defaultValue: const Clock())
+  @JsonKey(ignore: true)
   final Clock clock;
 
   /// Should only be changed after calling from the server. With this,
@@ -38,11 +38,9 @@ abstract class CornerstoneSnapshot extends Equatable {
 }
 
 /// Parse string date to DateTime object
-@visibleForTesting
 DateTime dateTimeFromString(String date) =>
     date != null && date.isNotEmpty ? DateTime.parse(date).toLocal() : null;
 
 /// Parse DateTime object to String
-@visibleForTesting
 String dateTimeToString(DateTime date) =>
     date != null ? date.toUtc().toIso8601String() : null;

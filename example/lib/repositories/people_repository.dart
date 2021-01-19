@@ -20,9 +20,9 @@ abstract class PeopleRepository
 
 /// Remember to use `anyMap: true` if you use Hive because otherwise will throw:
 ///
-/// ```sh
+/// ```text
 /// type '_InternalLinkedHashMap<dynamic, dynamic>' is not a subtype of type
-/// 'Map<String, dynamic>' in type cast)
+/// 'Map<String, dynamic>' in type cast
 /// ```
 @JsonSerializable(explicitToJson: true, checked: true, anyMap: true)
 class PeopleSnapshot extends Equatable {
