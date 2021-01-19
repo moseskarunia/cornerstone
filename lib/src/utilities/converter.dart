@@ -1,4 +1,4 @@
-import 'package:cornerstone/src/failure.dart';
+import 'package:cornerstone/src/core/failure.dart';
 
 /// Accepts an exeption and return equivalent failure. A reusable model to make
 /// your repository functions doesn't need to keep testing exception handling.

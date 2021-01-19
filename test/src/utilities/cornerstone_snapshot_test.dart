@@ -1,5 +1,5 @@
 import 'package:clock/clock.dart';
-import 'package:cornerstone/src/cornerstone_snapshot.dart';
+import 'package:cornerstone/cornerstone.dart';
 import 'package:test/test.dart';
 
 class DummySnapshot extends CornerstoneSnapshot {

@@ -1,6 +1,6 @@
-import 'package:cornerstone/cornerstone.dart';
-import 'package:cornerstone/src/converter.dart';
-import 'package:cornerstone/src/cornerstone_snapshot.dart';
+import 'package:cornerstone/src/core/data_source.dart';
+import 'package:cornerstone/src/core/failure.dart';
+import 'package:cornerstone/src/utilities/converter.dart';
 import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
 

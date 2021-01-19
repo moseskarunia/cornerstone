@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cornerstone/src/failure.dart';
+import 'package:cornerstone/src/core/failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
 

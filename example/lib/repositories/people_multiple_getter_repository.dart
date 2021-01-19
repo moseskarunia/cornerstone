@@ -1,6 +1,5 @@
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
-import 'package:cornerstone/src/converter.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:example/entities/person.dart';

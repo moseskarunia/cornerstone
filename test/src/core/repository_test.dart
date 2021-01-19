@@ -1,5 +1,4 @@
-import 'package:cornerstone/src/failure.dart';
-import 'package:cornerstone/src/repository.dart';
+import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:test/test.dart';
 
