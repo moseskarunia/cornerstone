@@ -1,6 +1,8 @@
 import 'package:cornerstone/src/failure.dart';
 
-/// Accepts an exeption and return equivalent failure.
+/// Accepts an exeption and return equivalent failure. A reusable model to make
+/// your repository functions doesn't need to keep testing exception handling.
+/// Just mock it and off you go.
 ///
 /// Example usage:
 ///
@@ -13,15 +15,15 @@ import 'package:cornerstone/src/failure.dart';
 /// }
 ///
 /// class ConvertMyExceptionToFailure<dynamic>{
-///   Failure<dynamic> call(Exception e) {
+///   Failure<dynamic> call(dynamic e) {
 ///     if(e is MyException) {
 ///       return Failure(name: e.name, details: e.details);
 ///     } else {
-///       return Failure(name: 'UNEXPECTED_ERROR', details: e.toString());
+///       return Failure(name: 'UNEXPECTED_ERROR', details: e);
 ///     }
 ///   }
 /// }
 /// ```
 abstract class ConvertExceptionToFailure<T> {
-  Failure<T> call(Exception e);
+  Failure<T> call(dynamic e);
 }
