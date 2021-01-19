@@ -42,4 +42,13 @@ void main() {
       ),
     );
   });
+
+  test('dateTimeToString', () {
+    expect(dateTimeToString(DateTime(2020, 10, 10)),
+        DateTime(2020, 10, 10).toUtc().toIso8601String());
+  });
+  test('dateTimeFromString', () {
+    expect(dateTimeFromString('2020-10-10T00:00:00Z'),
+        DateTime(2020, 10, 10).toLocal());
+  });
 }

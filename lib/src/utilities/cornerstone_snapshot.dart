@@ -23,7 +23,9 @@ abstract class CornerstoneSnapshot extends Equatable {
   /// you can set up a timer to periodically fetches the data from the server
   /// if it's already too old.
   ///
-  /// Shouldn't null
+  /// Already annotated with
+  /// `@JsonKey(fromJson: _$dateTimeFromJson, toJson: _$dateTimeToJson)`
+  @JsonKey(fromJson: dateTimeFromString, toJson: dateTimeToString)
   final DateTime timestamp;
 
   /// Difference of current datetime compared to [timestamp].
@@ -34,3 +36,13 @@ abstract class CornerstoneSnapshot extends Equatable {
     this.clock = const Clock(),
   }) : assert(clock != null && timestamp != null);
 }
+
+/// Parse string date to DateTime object
+@visibleForTesting
+DateTime dateTimeFromString(String date) =>
+    date != null && date.isNotEmpty ? DateTime.parse(date).toLocal() : null;
+
+/// Parse DateTime object to String
+@visibleForTesting
+String dateTimeToString(DateTime date) =>
+    date != null ? date.toUtc().toIso8601String() : null;
