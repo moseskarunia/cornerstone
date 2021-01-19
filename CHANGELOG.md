@@ -1,5 +1,7 @@
 ## [0.1.0] - 20 January 2020
-- Added `HivePersistentRepositoryMixin`. I find it really repetitive to make this every time, so I put it in the main library. So, it now has `Hive` as a dependency.
+- **Breaking Change** `LocallyPersistentRepository` is now a mixin.
+- Added `HivePersistentRepositoryMixin`. I find it really repetitive to make this every time, so I put it in the main library.
+- Added `Hive` as a dependency for `HivePersistentRepositoryMixin`.
 - Added `ConvertExceptionToFailure`. A mockable & reusable exception -> failure converter. This way if you have a lot of functions in a repo, doesn't need to keep testing each function for its error handling.
 - Added `CornerstoneSnapshot`. You can use it as base class for your repositories. It have built-in convenience like timestamp.
 - Example project has been updated to also includes `HivePersistentRepositoryMixin` usage.
