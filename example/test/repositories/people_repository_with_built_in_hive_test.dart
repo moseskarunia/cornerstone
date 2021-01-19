@@ -42,7 +42,7 @@ void main() {
       'data': jsonListFixture,
     };
 
-    final snapFixture = PeopleSnapshot(
+    final snapFixture = NewPeopleSnapshot(
       data: peopleListFixture,
       timestamp: dateFixture,
     );
@@ -63,6 +63,18 @@ void main() {
         clock: Clock.fixed(DateTime(2020, 10, 10)),
       );
       when(hive.openBox(any)).thenAnswer((_) async => box);
+    });
+
+    group('NewPeopleSnapshot', () {
+      test('props', () {
+        expect(snapFixture.props, [dateFixture, peopleListFixture]);
+      });
+      test('fromJson', () {
+        expect(NewPeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
+      });
+      test('toJson', () {
+        expect(snapFixture.toJson(), snapJsonFixture);
+      });
     });
 
     test('storageName should be PeopleRepoWithBuiltInHiveImpl', () {
@@ -101,11 +113,11 @@ void main() {
         final result = await repo.load();
         expect(
           repo.data,
-          PeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
+          NewPeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
         );
         expect(
           (result as Right).value,
-          PeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
+          NewPeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
         );
         verifyInOrder([
           hive.openBox(repo.storageName),

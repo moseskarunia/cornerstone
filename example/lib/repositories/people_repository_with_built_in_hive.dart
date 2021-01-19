@@ -9,17 +9,18 @@ import 'package:meta/meta.dart';
 part 'people_repository_with_built_in_hive.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class PeopleSnapshot extends CornerstoneSnapshot {
+class NewPeopleSnapshot extends CornerstoneSnapshot {
   @JsonKey(defaultValue: [])
   final List<Person> data;
 
-  PeopleSnapshot({this.data = const [], DateTime timestamp})
+  NewPeopleSnapshot({this.data = const [], DateTime timestamp})
       : super(clock: const Clock(), timestamp: timestamp);
 
   @override
   List<Object> get props => [timestamp, data];
 
-  factory PeopleSnapshot.fromJson(Map json) => _$PeopleSnapshotFromJson(json);
+  factory NewPeopleSnapshot.fromJson(Map json) =>
+      _$PeopleSnapshotFromJson(json);
 
   Map<String, dynamic> toJson() => _$PeopleSnapshotToJson(this);
 }
@@ -28,9 +29,9 @@ class PeopleSnapshot extends CornerstoneSnapshot {
 /// built-in.
 abstract class PeopleRepoWithBuiltInHive
     with
-        LocallyPersistentRepository<PeopleSnapshot>,
-        HivePersistentRepositoryMixin<PeopleSnapshot> {
-  Future<Either<Failure, PeopleSnapshot>> getPeople();
+        LocallyPersistentRepository<NewPeopleSnapshot>,
+        HivePersistentRepositoryMixin<NewPeopleSnapshot> {
+  Future<Either<Failure, NewPeopleSnapshot>> getPeople();
 }
 
 class PeopleRepoWithBuiltInHiveImpl extends PeopleRepoWithBuiltInHive {
@@ -39,7 +40,7 @@ class PeopleRepoWithBuiltInHiveImpl extends PeopleRepoWithBuiltInHive {
   @override
   final ConvertToFailure convertToFailure;
 
-  PeopleSnapshot data = PeopleSnapshot(timestamp: (const Clock()).now());
+  NewPeopleSnapshot data = NewPeopleSnapshot(timestamp: (const Clock()).now());
 
   Map<String, dynamic> get asJson => data.toJson();
 
@@ -50,24 +51,23 @@ class PeopleRepoWithBuiltInHiveImpl extends PeopleRepoWithBuiltInHive {
   });
 
   @override
-  Future<Either<Failure, PeopleSnapshot>> load() async {
-    try {
-      final result = await loadData();
+  Future<Either<Failure, NewPeopleSnapshot>> load() async {
+    /// Doesn't need to wrap in try catch since basically this function just
+    /// calls [loadData], which already wrapped in try catch.
 
-      if (result.isLeft()) {
-        return Left((result as Left).value);
-      }
+    final result = await loadData();
 
-      data = PeopleSnapshot.fromJson((result as Right).value);
-
-      return Right(data);
-    } catch (e) {
-      return Left(convertToFailure(e));
+    if (result.isLeft()) {
+      return Left((result as Left).value);
     }
+
+    data = NewPeopleSnapshot.fromJson((result as Right).value);
+
+    return Right(data);
   }
 
   @override
-  Future<Either<Failure, PeopleSnapshot>> getPeople() {
+  Future<Either<Failure, NewPeopleSnapshot>> getPeople() {
     /// The implementation is identical to the one in [PeopleRepository],
     /// so I won't rewrite it again for brevity.
     throw UnimplementedError();
