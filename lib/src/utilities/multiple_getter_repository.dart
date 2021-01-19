@@ -4,7 +4,7 @@ import 'package:cornerstone/src/cornerstone_snapshot.dart';
 import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
 
-/// Repository with built-in getter to multiple `GetterDataSource`s.
+/// Repository with built-in getter to `MultipleGetterDataSource`s.
 ///
 /// For Snapshot, you can use [CornerstoneSnapshot] for some built-in
 /// conveniences (not mandatory).
