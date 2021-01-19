@@ -11,6 +11,10 @@ import 'package:meta/meta.dart';
 /// Equivalent to [PeopleRepository] but this time, I use
 /// [MultipleGetterRepository]. This class won't actually be used.
 /// Use it just for usage comparison.
+/// 
+/// The usage difference:
+/// - PeopleRepository: `repo.getPeople()`
+/// - PeopleMultipleGetterRepository: `repo.getMultiple()`
 abstract class PeopleMultipleGetterRepository
     extends LocallyPersistentRepository<PeopleSnapshot>
     with
@@ -79,6 +83,8 @@ class PeopleMultipleGetterRepositoryImpl
   }
 }
 
+/// You can reuse this across many repositories and many repo's functions.
+/// The efficiency gain will be more impactful in a large project.
 class ConvertPeopleExceptionToFailure extends ConvertExceptionToFailure {
   @override
   Failure call(dynamic e) {
