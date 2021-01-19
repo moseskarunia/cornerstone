@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'people_repository_with_built_in_hive.dart';
+part of 'auto_persistent_people_repository.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-NewPeopleSnapshot _$PeopleSnapshotFromJson(Map<String, dynamic> json) {
+NewPeopleSnapshot _$NewPeopleSnapshotFromJson(Map<String, dynamic> json) {
   return NewPeopleSnapshot(
     data: (json['data'] as List)
             ?.map((e) =>
@@ -17,7 +17,7 @@ NewPeopleSnapshot _$PeopleSnapshotFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$PeopleSnapshotToJson(NewPeopleSnapshot instance) =>
+Map<String, dynamic> _$NewPeopleSnapshotToJson(NewPeopleSnapshot instance) =>
     <String, dynamic>{
       'timestamp': dateTimeToString(instance.timestamp),
       'data': instance.data?.map((e) => e?.toJson())?.toList(),

@@ -49,6 +49,6 @@ void main() {
   });
   test('dateTimeFromString', () {
     expect(dateTimeFromString('2020-10-10T00:00:00Z'),
-        DateTime(2020, 10, 10).toLocal());
+        DateTime.parse('2020-10-10T00:00:00Z').toLocal());
   });
 }

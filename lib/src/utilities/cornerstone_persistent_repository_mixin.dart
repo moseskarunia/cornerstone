@@ -11,7 +11,8 @@ import 'package:meta/meta.dart';
 ///
 /// If you use Flutter, you should install hive_flutter package and use
 /// `Hive.initFlutter()`.
-mixin HivePersistentRepositoryMixin<Snap> on LocallyPersistentRepository<Snap> {
+mixin CornerstonePersistentRepositoryMixin<Snap>
+    on LocallyPersistentRepository<Snap> {
   HiveInterface get hive;
   ConvertToFailure get convertToFailure;
 

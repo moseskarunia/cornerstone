@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
-import 'package:example/repositories/people_repository_with_built_in_hive.dart';
+import 'package:example/repositories/auto_persistent_people_repository.dart';
 import 'package:hive/hive.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -18,7 +18,7 @@ class MockBox extends Mock implements Box {}
 class MockConvert extends Mock implements ConvertToFailure {}
 
 void main() {
-  group('PeopleRepoWithBuiltInHiveImpl', () {
+  group('AutoPersistentPeopleRepositoryImpl', () {
     final jsonListFixture = [
       <String, dynamic>{
         'id': 123,
@@ -50,14 +50,14 @@ void main() {
     MockBox box;
     MockHive hive;
     MockConvert convert;
-    PeopleRepoWithBuiltInHiveImpl repo;
+    AutoPersistentPeopleRepositoryImpl repo;
 
     setUp(() {
       box = MockBox();
       hive = MockHive();
       convert = MockConvert();
 
-      repo = PeopleRepoWithBuiltInHiveImpl(
+      repo = AutoPersistentPeopleRepositoryImpl(
         hive: hive,
         convertToFailure: convert,
         clock: Clock.fixed(DateTime(2020, 10, 10)),

@@ -1,6 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
-import 'package:cornerstone/src/utilities/hive_persistent_repository_mixin.dart';
+import 'package:cornerstone/src/utilities/cornerstone_persistent_repository_mixin.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
@@ -36,7 +36,7 @@ class FruitQueryParam extends Equatable {
 abstract class FruitRepository
     with
         LocallyPersistentRepository<FruitSnapshot>,
-        HivePersistentRepositoryMixin<FruitSnapshot> {}
+        CornerstonePersistentRepositoryMixin<FruitSnapshot> {}
 
 class FruitRepositoryImpl extends FruitRepository {
   @override
@@ -77,7 +77,7 @@ void main() {
 
     when(hive.openBox(any)).thenAnswer((_) async => box);
   });
-  group('HivePersistenceRepositoryMixin', () {
+  group('CornerstonePersistenceRepositoryMixin', () {
     test('storageName should be FruitRepositoryImpl', () {
       expect(repo.storageName, 'FruitRepositoryImpl');
     });

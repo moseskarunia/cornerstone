@@ -6,7 +6,7 @@ import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
-part 'people_repository_with_built_in_hive.g.dart';
+part 'auto_persistent_people_repository.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class NewPeopleSnapshot extends CornerstoneSnapshot {
@@ -20,21 +20,22 @@ class NewPeopleSnapshot extends CornerstoneSnapshot {
   List<Object> get props => [timestamp, data];
 
   factory NewPeopleSnapshot.fromJson(Map json) =>
-      _$PeopleSnapshotFromJson(json);
+      _$NewPeopleSnapshotFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PeopleSnapshotToJson(this);
+  Map<String, dynamic> toJson() => _$NewPeopleSnapshotToJson(this);
 }
 
 /// Equivalent to [PeopleRepository] but this time, the Hive functionality is
 /// built-in.
-abstract class PeopleRepoWithBuiltInHive
+abstract class AutoPersistentPeopleRepository
     with
         LocallyPersistentRepository<NewPeopleSnapshot>,
-        HivePersistentRepositoryMixin<NewPeopleSnapshot> {
+        CornerstonePersistentRepositoryMixin<NewPeopleSnapshot> {
   Future<Either<Failure, NewPeopleSnapshot>> getPeople();
 }
 
-class PeopleRepoWithBuiltInHiveImpl extends PeopleRepoWithBuiltInHive {
+class AutoPersistentPeopleRepositoryImpl
+    extends AutoPersistentPeopleRepository {
   final Clock clock;
   final HiveInterface hive;
   @override
@@ -44,7 +45,7 @@ class PeopleRepoWithBuiltInHiveImpl extends PeopleRepoWithBuiltInHive {
 
   Map<String, dynamic> get asJson => data.toJson();
 
-  PeopleRepoWithBuiltInHiveImpl({
+  AutoPersistentPeopleRepositoryImpl({
     @required this.hive,
     @required this.convertToFailure,
     this.clock = const Clock(),
