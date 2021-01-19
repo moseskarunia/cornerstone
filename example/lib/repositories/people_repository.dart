@@ -12,8 +12,9 @@ import 'package:meta/meta.dart';
 part 'people_repository.g.dart';
 
 abstract class PeopleRepository
-    extends LocallyPersistentRepository<PeopleSnapshot>
-    with HivePersistenceRepositoryMixin<PeopleSnapshot> {
+    with
+        LocallyPersistentRepository<PeopleSnapshot>,
+        HivePersistenceRepositoryMixin<PeopleSnapshot> {
   Future<Either<Failure, PeopleSnapshot>> getPeople();
 }
 

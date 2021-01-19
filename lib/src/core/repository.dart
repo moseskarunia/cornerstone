@@ -9,15 +9,14 @@ import 'package:meta/meta.dart';
 /// I don't think it needs a delete by key function, since if the key is the
 /// fieldName (which it should), then it cannot have key deleted.
 ///
-/// It's recommended to implement this as a mixin to make it resuable across
+/// It's recommended to implement this as a mixin to make it reusable across
 /// your repositories.
 ///
 /// To make dealing with json easier, I recommend
 /// [json_serializable](https://pub.dev/packages/json_serializable)
 ///
 /// For usage example, check the example project.
-/// ```
-abstract class LocallyPersistentRepository<T> {
+mixin LocallyPersistentRepository<T> {
   /// Write the repository fields you want to persist locally. The key should
   /// matches the fieldName of those fields.
   ///

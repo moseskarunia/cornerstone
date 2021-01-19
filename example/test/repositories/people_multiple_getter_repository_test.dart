@@ -16,7 +16,7 @@ class MockHive extends Mock implements HiveInterface {}
 
 class MockBox extends Mock implements Box {}
 
-class MockConvert extends Mock implements ConvertExceptionToFailure {}
+class MockConvert extends Mock implements ConvertToFailure {}
 
 void main() {
   group('ConvertPeopleExceptionToFailure', () {
@@ -107,7 +107,7 @@ void main() {
       expect(repo.asJson, snapJsonFixture);
     });
 
-    group('getPeople', () {
+    group('getMultiple', () {
       test(
         'should return Right with PeopleSnapshot and isSaved',
         () async {

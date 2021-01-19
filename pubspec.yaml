@@ -10,6 +10,7 @@ dependencies:
   clock: ^1.0.1
   dartz: ^0.9.1
   equatable: ^1.2.5
+  hive: ^1.4.4
   json_annotation: ^3.0.1
   meta: ^1.2.4
 

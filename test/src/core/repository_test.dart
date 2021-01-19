@@ -2,7 +2,7 @@ import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:test/test.dart';
 
-class MyUniqueRepo extends LocallyPersistentRepository<Map<String, dynamic>> {
+class MyUniqueRepo with LocallyPersistentRepository<Map<String, dynamic>> {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
@@ -21,7 +21,7 @@ class MyUniqueRepo extends LocallyPersistentRepository<Map<String, dynamic>> {
   }
 }
 
-class MyNotSoUniqueRepo extends LocallyPersistentRepository {
+class MyNotSoUniqueRepo with LocallyPersistentRepository {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
@@ -43,7 +43,7 @@ class MyNotSoUniqueRepo extends LocallyPersistentRepository {
   String get id => 'loremipsum';
 }
 
-class NulledIdRepo extends LocallyPersistentRepository<Map<String, dynamic>> {
+class NulledIdRepo with LocallyPersistentRepository<Map<String, dynamic>> {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
