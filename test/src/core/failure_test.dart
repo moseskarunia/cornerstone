@@ -1,4 +1,4 @@
-import 'package:cornerstone/src/failure.dart';
+import 'package:cornerstone/cornerstone.dart';
 import 'package:test/test.dart';
 
 void main() {

@@ -15,11 +15,7 @@ PeopleSnapshot _$PeopleSnapshotFromJson(Map json) {
               json,
               'data',
               (v) => (v as List)
-                  ?.map((e) => e == null
-                      ? null
-                      : Person.fromJson((e as Map)?.map(
-                          (k, e) => MapEntry(k as String, e),
-                        )))
+                  ?.map((e) => e == null ? null : Person.fromJson(e as Map))
                   ?.toList()) ??
           [],
       isSaved: $checkedConvert(json, 'isSaved', (v) => v as bool) ?? false,

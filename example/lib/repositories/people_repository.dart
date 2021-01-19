@@ -12,16 +12,17 @@ import 'package:meta/meta.dart';
 part 'people_repository.g.dart';
 
 abstract class PeopleRepository
-    extends LocallyPersistentRepository<PeopleSnapshot>
-    with HivePersistenceRepositoryMixin<PeopleSnapshot> {
+    with
+        LocallyPersistentRepository<PeopleSnapshot>,
+        HivePersistenceRepositoryMixin<PeopleSnapshot> {
   Future<Either<Failure, PeopleSnapshot>> getPeople();
 }
 
 /// Remember to use `anyMap: true` if you use Hive because otherwise will throw:
 ///
-/// ```sh
+/// ```text
 /// type '_InternalLinkedHashMap<dynamic, dynamic>' is not a subtype of type
-/// 'Map<String, dynamic>' in type cast)
+/// 'Map<String, dynamic>' in type cast
 /// ```
 @JsonSerializable(explicitToJson: true, checked: true, anyMap: true)
 class PeopleSnapshot extends Equatable {

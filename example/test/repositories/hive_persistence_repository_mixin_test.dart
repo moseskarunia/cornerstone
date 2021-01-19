@@ -6,8 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class MyRepo extends LocallyPersistentRepository
-    with HivePersistenceRepositoryMixin {
+class MyRepo with LocallyPersistentRepository, HivePersistenceRepositoryMixin {
   final HiveInterface hive;
 
   List<String> fruits = ['Apple', 'Orange', 'Banana'];

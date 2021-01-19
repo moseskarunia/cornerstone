@@ -1,17 +1,20 @@
 name: cornerstone
 description: A library written in pure dart to help devs set up dart projects with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
-version: 0.0.2
+version: 0.1.0
 repository: https://www.github.com/moseskarunia/cornerstone
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  equatable: ^1.2.5
-  meta: ^1.2.4
+  clock: ^1.0.1
   dartz: ^0.9.1
+  equatable: ^1.2.5
+  hive: ^1.4.4
+  json_annotation: ^3.0.1
+  meta: ^1.2.4
 
-dev_dependencies:
-  test: ^1.14.6
-  mockito: ^4.1.1
+dev_dependencies:  
   coverage: ^0.14.1
+  mockito: ^4.1.1
+  test: ^1.14.6
