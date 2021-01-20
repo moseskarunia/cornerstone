@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cornerstone/cornerstone.dart';
 import 'package:cornerstone/src/core/failure.dart';
 import 'package:dartz/dartz.dart';
 import 'package:meta/meta.dart';
@@ -16,7 +17,7 @@ import 'package:meta/meta.dart';
 /// [json_serializable](https://pub.dev/packages/json_serializable)
 ///
 /// For usage example, check the example project.
-mixin LocallyPersistentRepository<T> {
+abstract class LocallyPersistentRepository<T> {
   /// Write the repository fields you want to persist locally. The key should
   /// matches the fieldName of those fields.
   ///

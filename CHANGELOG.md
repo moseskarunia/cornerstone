@@ -1,5 +1,6 @@
 ## [0.1.2] - 20 January 2020
-- Documentation: Fix `MultipleGetterPersisitentRepository` should be written as `CornerstonePersistentRepositoryMixin` on `ConvertToSnapshot`'s dartdoc.
+- Revert: `LocallyPersistentRepository` is now an abstract class again. In dart, you can use an abstract class as a mixin, but you can't have your classes extends from a mixin. You can always implements a mixin, but it will lose some built-in implementation code (In this case, e.g. `storageName`). So by making it an abstract class again, it will give you more flexibility with nothing to give up. Therefore this revert will not breaking anything. _(In case you are wondering, This is not the case with `CornerstonePersistentRepositoryMixin`. If I make it an abstract and extends from `LocallyPersistentRepository`, then it can no longer be used as a mixin.)_
+- Documentation: `MultipleGetterPersisitentRepository` should be written as `CornerstonePersistentRepositoryMixin` on `ConvertToSnapshot`'s dartdoc.
 
 ## [0.1.1] - 20 January 2020
 - **Breaking**: `LocallyPersistentRepository` is now a mixin.
