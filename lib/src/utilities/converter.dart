@@ -30,7 +30,7 @@ abstract class ConvertToFailure<T> {
 
 /// Convert to snapshot is a mockable function which used to generate
 /// Snapshot from data. Used in utility repos such as
-/// [MultipleGetterPersisitentRepository].
+/// [CornerstonePersistentRepositoryMixin].
 abstract class ConvertToSnapshot<Type, Snap> {
   Snap call(Type data);
 }
