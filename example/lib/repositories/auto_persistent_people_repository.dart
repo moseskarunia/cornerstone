@@ -38,34 +38,21 @@ class AutoPersistentPeopleRepositoryImpl
     extends AutoPersistentPeopleRepository {
   final Clock clock;
   final HiveInterface hive;
-  @override
   final ConvertToFailure convertToFailure;
+  final ConvertToSnapshot<Map<String, dynamic>, NewPeopleSnapshot>
+      convertToSnapshot;
 
-  NewPeopleSnapshot data = NewPeopleSnapshot(timestamp: (const Clock()).now());
+  @override
+  NewPeopleSnapshot snapshot;
 
-  Map<String, dynamic> get asJson => data.toJson();
+  Map<String, dynamic> get asJson => snapshot.toJson();
 
   AutoPersistentPeopleRepositoryImpl({
     @required this.hive,
     @required this.convertToFailure,
+    @required this.convertToSnapshot,
     this.clock = const Clock(),
-  });
-
-  @override
-  Future<Either<Failure, NewPeopleSnapshot>> load() async {
-    /// Doesn't need to wrap in try catch since basically this function just
-    /// calls [loadData], which already wrapped in try catch.
-
-    final result = await loadData();
-
-    if (result.isLeft()) {
-      return Left((result as Left).value);
-    }
-
-    data = NewPeopleSnapshot.fromJson((result as Right).value);
-
-    return Right(data);
-  }
+  }) : snapshot = NewPeopleSnapshot(timestamp: (const Clock()).now());
 
   @override
   Future<Either<Failure, NewPeopleSnapshot>> getPeople() {

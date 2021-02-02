@@ -16,6 +16,9 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
     on LocallyPersistentRepository<Snap> {
   HiveInterface get hive;
   ConvertToFailure get convertToFailure;
+  ConvertToSnapshot<Map<String, dynamic>, Snap> get convertToSnapshot;
+
+  Snap snapshot;
 
   @override
   @visibleForOverriding
@@ -42,23 +45,24 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
     }
   }
 
-  /// Loads data from hive and returns the `Map<String,dynamic>` data of
-  /// your snapshot. Call it from your load() which overrided from
-  /// [LocallyPersistentRepository].
-  @protected
-  @visibleForTesting
-  Future<Either<Failure, Map<String, dynamic>>> loadData() async {
+  @override
+  Future<Either<Failure, Snap>> load() async {
     try {
       final box = await hive.openBox(storageName);
 
       /// For some reason, this is the only safe way I can get box data as
-      /// `Map<String, dynamic>` consistently. Using cast throws an error.
+      /// `Map<String, dynamic>` (Using cast throws an error).
+      ///
+      /// Don't forget to add `anyMap: true` to your snapshot's
+      /// `@JsonSerializable` annotation.
       ///
       /// See this [issue](https://github.com/hivedb/hive/issues/522) if you
       /// want to get updated on this.
       final result = box.toMap().map((k, e) => MapEntry(k.toString(), e));
 
-      return Right(result);
+      snapshot = convertToSnapshot(result);
+
+      return Right(snapshot);
     } catch (e) {
       return Left(convertToFailure(e));
     }

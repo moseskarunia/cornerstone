@@ -18,7 +18,7 @@ Most modern apps revolves around CRUD operations through an API & Data Persisten
 
 ### CornerstonePersistentRepositoryMixin
 
-A mixin to make your repository persistable easily. I use [Hive](https://pub.dev/packages/hive) in order to achieve this. See the dartdoc in the file & implementation example in the example folder for more info.
+A mixin to make your repository persistable locally easily. I use [Hive](https://pub.dev/packages/hive) in order to achieve this. See the dartdoc in the file & implementation example in the example folder for more info and usage example.
 
 # The Architecture
 

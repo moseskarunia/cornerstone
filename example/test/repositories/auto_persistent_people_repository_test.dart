@@ -1,7 +1,5 @@
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
-import 'package:dartz/dartz.dart';
-import 'package:equatable/equatable.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/auto_persistent_people_repository.dart';
@@ -16,6 +14,9 @@ class MockHive extends Mock implements HiveInterface {}
 class MockBox extends Mock implements Box {}
 
 class MockConvert extends Mock implements ConvertToFailure {}
+
+class MockConvertToSnapshot extends Mock
+    implements ConvertToSnapshot<Map<String, dynamic>, NewPeopleSnapshot> {}
 
 void main() {
   group('AutoPersistentPeopleRepositoryImpl', () {
@@ -50,16 +51,19 @@ void main() {
     MockBox box;
     MockHive hive;
     MockConvert convert;
+    MockConvertToSnapshot convertToSnapshot;
     AutoPersistentPeopleRepositoryImpl repo;
 
     setUp(() {
       box = MockBox();
       hive = MockHive();
       convert = MockConvert();
+      convertToSnapshot = MockConvertToSnapshot();
 
       repo = AutoPersistentPeopleRepositoryImpl(
         hive: hive,
         convertToFailure: convert,
+        convertToSnapshot: convertToSnapshot,
         clock: Clock.fixed(DateTime(2020, 10, 10)),
       );
       when(hive.openBox(any)).thenAnswer((_) async => box);
@@ -77,53 +81,16 @@ void main() {
       });
     });
 
-    test('storageName should be PeopleRepoWithBuiltInHiveImpl', () {
-      expect(repo.storageName, 'PeopleRepoWithBuiltInHiveImpl');
+    test('storageName should be AutoPersistentPeopleRepositoryImpl', () {
+      expect(repo.storageName, 'AutoPersistentPeopleRepositoryImpl');
     });
     test('asJson', () {
-      repo.data = snapFixture;
+      repo.snapshot = snapFixture;
       expect(repo.asJson, snapJsonFixture);
     });
 
     test('getPeople should throw UnimplementedError', () {
       expectLater(() => repo.getPeople(), throwsA(isA<UnimplementedError>()));
-    });
-
-    group('load', () {
-      test(
-        'should catch exception and return result of convertToFailure in Left',
-        () async {
-          final e = HiveError('TEST_ERROR');
-          when(hive.openBox(any)).thenThrow(e);
-          when(convert(any)).thenReturn(Failure<dynamic>(name: 'TEST_ERROR'));
-
-          final result = await repo.load();
-
-          expect(
-            (result as Left).value,
-            Failure<dynamic>(name: 'TEST_ERROR'),
-          );
-          verifyInOrder([hive.openBox(repo.storageName), convert(e)]);
-        },
-      );
-
-      test('should call loadData in mixin and return Right', () async {
-        EquatableConfig.stringify = true;
-        when(box.toMap()).thenReturn(snapJsonFixture);
-        final result = await repo.load();
-        expect(
-          repo.data,
-          NewPeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
-        );
-        expect(
-          (result as Right).value,
-          NewPeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
-        );
-        verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.toMap(),
-        ]);
-      });
     });
   });
 }

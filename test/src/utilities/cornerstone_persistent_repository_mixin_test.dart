@@ -14,6 +14,9 @@ class MockBox extends Mock implements Box {}
 
 class MockConvertToFailure extends Mock implements ConvertToFailure {}
 
+class MockConvertToSnapshot extends Mock
+    implements ConvertToSnapshot<Map<String, dynamic>, FruitSnapshot> {}
+
 class FruitSnapshot extends CornerstoneSnapshot {
   final List<String> data;
 
@@ -41,39 +44,47 @@ abstract class FruitRepository
 class FruitRepositoryImpl extends FruitRepository {
   @override
   final ConvertToFailure convertToFailure;
+  final ConvertToSnapshot<Map<String, dynamic>, FruitSnapshot>
+      convertToSnapshot;
   final HiveInterface hive;
 
-  FruitSnapshot data = FruitSnapshot(
-    data: [],
-    timestamp: DateTime(2020, 10, 10),
-  );
+  @override
+  FruitSnapshot snapshot;
 
   FruitRepositoryImpl({
     @required this.hive,
     @required this.convertToFailure,
-  });
+    @required this.convertToSnapshot,
+  }) : snapshot = FruitSnapshot(
+          data: [],
+          timestamp: DateTime.parse('2021-01-10T10:00:00Z').toLocal(),
+        );
 
   @override
   Map<String, dynamic> get asJson => <String, dynamic>{
-        'data': data.data,
-        'timestamp': data.timestamp.toUtc().toIso8601String()
+        'data': snapshot?.data,
+        'timestamp': snapshot?.timestamp?.toUtc()?.toIso8601String()
       };
-
-  @override
-  Future<Either<Failure, FruitSnapshot>> load() => throw UnimplementedError();
 }
 
 void main() {
+  final dateFixture = DateTime.parse('2021-01-10T10:00:00Z').toLocal();
   MockBox box;
   MockConvertToFailure convertToFailure;
+  MockConvertToSnapshot convertToSnapshot;
   FruitRepositoryImpl repo;
   MockHive hive;
 
   setUp(() {
+    convertToSnapshot = MockConvertToSnapshot();
     convertToFailure = MockConvertToFailure();
     box = MockBox();
     hive = MockHive();
-    repo = FruitRepositoryImpl(hive: hive, convertToFailure: convertToFailure);
+    repo = FruitRepositoryImpl(
+      hive: hive,
+      convertToFailure: convertToFailure,
+      convertToSnapshot: convertToSnapshot,
+    );
 
     when(hive.openBox(any)).thenAnswer((_) async => box);
   });
@@ -144,29 +155,56 @@ void main() {
       });
     });
 
-    group('loadData', () {
+    group('load', () {
       test(
-          'should catch Exception '
-          'and return the result of convertToFailure', () async {
-        final e = HiveError('TEST_ERROR');
-        when(box.toMap()).thenThrow(e);
-        when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+        'should catch Exception '
+        'and return the result of convertToFailure',
+        () async {
+          final e = HiveError('TEST_ERROR');
+          when(box.toMap()).thenThrow(e);
+          when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
 
-        final result = await repo.loadData();
+          final result = await repo.load();
 
-        expect((result as Left).value, Failure(name: 'TEST_ERROR'));
+          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
 
+          verifyInOrder([
+            hive.openBox(repo.storageName),
+            box.toMap(),
+            convertToFailure(e),
+          ]);
+        },
+      );
+
+      test('should assign snapshot', () async {
+        when(box.toMap()).thenReturn(<String, dynamic>{
+          'data': ['Apple'],
+          'timestamp': '2021-01-10T10:00:00Z'
+        });
+        when(convertToSnapshot(any)).thenReturn(FruitSnapshot(
+          data: ['Apple'],
+          timestamp: dateFixture,
+        ));
+        final result = await repo.load();
+        expect(
+          (result as Right).value,
+          FruitSnapshot(data: ['Apple'], timestamp: dateFixture),
+        );
+        expect(
+          repo.snapshot,
+          FruitSnapshot(
+            data: ['Apple'],
+            timestamp: dateFixture,
+          ),
+        );
         verifyInOrder([
           hive.openBox(repo.storageName),
           box.toMap(),
-          convertToFailure(e),
+          convertToSnapshot(<String, dynamic>{
+            'data': ['Apple'],
+            'timestamp': '2021-01-10T10:00:00Z'
+          }),
         ]);
-      });
-
-      test('should return the loaded json', () async {
-        when(box.toMap()).thenReturn(<String, dynamic>{'name': 'John Doe'});
-        final result = await repo.loadData();
-        expect((result as Right).value, <String, dynamic>{'name': 'John Doe'});
       });
     });
   });
