@@ -1,3 +1,6 @@
+## [1.1.1] - 24 February 2021
+- Fix: Properly export `CornerstoneException`.
+
 ## [1.1.0] - 24 February 2021
 - New: `CornerstoneException`, a common exception model to make repository layer even more decoupled.
 - Update: Bump `json_serialization` dependency to `^3.1.1`
