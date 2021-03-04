@@ -37,9 +37,7 @@ abstract class CornerstoneSnapshot extends Equatable {
 }
 
 /// Parse string date to DateTime object
-DateTime? dateTimeFromString(String? date) =>
-    date != null && date.isNotEmpty ? DateTime.parse(date).toLocal() : null;
+DateTime dateTimeFromString(String date) => DateTime.parse(date).toLocal();
 
 /// Parse DateTime object to String
-String? dateTimeToString(DateTime? date) =>
-    date != null ? date.toUtc().toIso8601String() : null;
+String dateTimeToString(DateTime date) => date.toUtc().toIso8601String();
