@@ -6,12 +6,11 @@ part of 'auto_persistent_people_repository.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-NewPeopleSnapshot _$NewPeopleSnapshotFromJson(Map<String, dynamic> json) {
+NewPeopleSnapshot _$NewPeopleSnapshotFromJson(Map json) {
   return NewPeopleSnapshot(
-    data: (json['data'] as List)
-            ?.map((e) =>
-                e == null ? null : Person.fromJson(e as Map<String, dynamic>))
-            ?.toList() ??
+    data: (json['data'] as List<dynamic>?)
+            ?.map((e) => Person.fromJson(e as Map))
+            .toList() ??
         [],
     timestamp: dateTimeFromString(json['timestamp'] as String),
   );
@@ -20,5 +19,5 @@ NewPeopleSnapshot _$NewPeopleSnapshotFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$NewPeopleSnapshotToJson(NewPeopleSnapshot instance) =>
     <String, dynamic>{
       'timestamp': dateTimeToString(instance.timestamp),
-      'data': instance.data?.map((e) => e?.toJson())?.toList(),
+      'data': instance.data.map((e) => e.toJson()).toList(),
     };

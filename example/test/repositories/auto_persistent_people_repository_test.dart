@@ -1,23 +1,43 @@
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
-import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/auto_persistent_people_repository.dart';
 import 'package:hive/hive.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class MockDataSource extends Mock implements PeopleDataSource {}
+import 'auto_persistent_people_repository_test.mocks.dart';
 
-class MockHive extends Mock implements HiveInterface {}
+class MockBox extends Mock implements Box {
+  @override
+  Future<void> putAll(Map entries) async =>
+      await super.noSuchMethod(Invocation.method(#putAll, [entries]));
 
-class MockBox extends Mock implements Box {}
+  @override
+  Future<int> clear() async =>
+      await super.noSuchMethod(Invocation.method(#clear, []), returnValue: 0);
 
-class MockConvert extends Mock implements ConvertToFailure {}
+  @override
+  Map toMap() => super.noSuchMethod(Invocation.method(#toMap, []),
+      returnValue: <String, dynamic>{});
+}
+
+class MockConvertToFailure extends Mock implements ConvertToFailure {
+  @override
+  Failure call(dynamic e) => super.noSuchMethod(Invocation.method(#call, [e]),
+      returnValue: Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e));
+}
 
 class MockConvertToSnapshot extends Mock
-    implements ConvertToSnapshot<Map<String, dynamic>, NewPeopleSnapshot> {}
+    implements ConvertToSnapshot<NewPeopleSnapshot> {
+  @override
+  NewPeopleSnapshot call(Map data) =>
+      super.noSuchMethod(Invocation.method(#call, [data]),
+          returnValue: NewPeopleSnapshot(timestamp: DateTime(2020, 10, 10)));
+}
 
+@GenerateMocks([HiveInterface])
 void main() {
   group('AutoPersistentPeopleRepositoryImpl', () {
     final jsonListFixture = [
@@ -48,16 +68,16 @@ void main() {
       timestamp: dateFixture,
     );
 
-    MockBox box;
-    MockHive hive;
-    MockConvert convert;
-    MockConvertToSnapshot convertToSnapshot;
-    AutoPersistentPeopleRepositoryImpl repo;
+    late MockBox box;
+    late MockHiveInterface hive;
+    late MockConvertToFailure convert;
+    late MockConvertToSnapshot convertToSnapshot;
+    late AutoPersistentPeopleRepositoryImpl repo;
 
     setUp(() {
       box = MockBox();
-      hive = MockHive();
-      convert = MockConvert();
+      hive = MockHiveInterface();
+      convert = MockConvertToFailure();
       convertToSnapshot = MockConvertToSnapshot();
 
       repo = AutoPersistentPeopleRepositoryImpl(

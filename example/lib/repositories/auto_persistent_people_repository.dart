@@ -4,20 +4,19 @@ import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 
 part 'auto_persistent_people_repository.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, anyMap: true)
 class NewPeopleSnapshot extends CornerstoneSnapshot {
   @JsonKey(defaultValue: [])
   final List<Person> data;
 
-  NewPeopleSnapshot({this.data = const [], DateTime timestamp})
+  NewPeopleSnapshot({this.data = const [], required DateTime timestamp})
       : super(clock: const Clock(), timestamp: timestamp);
 
   @override
-  List<Object> get props => [timestamp, data];
+  List<Object?> get props => [timestamp, data];
 
   factory NewPeopleSnapshot.fromJson(Map json) =>
       _$NewPeopleSnapshotFromJson(json);
@@ -39,8 +38,7 @@ class AutoPersistentPeopleRepositoryImpl
   final Clock clock;
   final HiveInterface hive;
   final ConvertToFailure convertToFailure;
-  final ConvertToSnapshot<Map<String, dynamic>, NewPeopleSnapshot>
-      convertToSnapshot;
+  final ConvertToSnapshot<NewPeopleSnapshot> convertToSnapshot;
 
   @override
   NewPeopleSnapshot snapshot;
@@ -48,16 +46,14 @@ class AutoPersistentPeopleRepositoryImpl
   Map<String, dynamic> get asJson => snapshot.toJson();
 
   AutoPersistentPeopleRepositoryImpl({
-    @required this.hive,
-    @required this.convertToFailure,
-    @required this.convertToSnapshot,
+    required this.hive,
+    required this.convertToFailure,
+    required this.convertToSnapshot,
     this.clock = const Clock(),
   }) : snapshot = NewPeopleSnapshot(timestamp: (const Clock()).now());
 
   @override
-  Future<Either<Failure, NewPeopleSnapshot>> getPeople() {
-    /// The implementation is identical to the one in [PeopleRepository],
-    /// so I won't rewrite it again for brevity.
+  Future<Either<Failure, NewPeopleSnapshot>> getPeople() async {
     throw UnimplementedError();
   }
 }
