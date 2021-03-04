@@ -4,36 +4,57 @@ import 'package:cornerstone/src/utilities/cornerstone_persistent_repository_mixi
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
-import 'package:meta/meta.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class MockHive extends Mock implements HiveInterface {}
+import 'cornerstone_persistent_repository_mixin_test.mocks.dart';
 
-class MockBox extends Mock implements Box {}
+class MockBox extends Mock implements Box {
+  @override
+  Future<void> putAll(Map entries) async =>
+      await super.noSuchMethod(Invocation.method(#putAll, [entries]));
 
-class MockConvertToFailure extends Mock implements ConvertToFailure {}
+  @override
+  Future<int> clear() async =>
+      await super.noSuchMethod(Invocation.method(#clear, []), returnValue: 0);
+
+  @override
+  Map toMap() => super.noSuchMethod(Invocation.method(#toMap, []),
+      returnValue: <String, dynamic>{});
+}
+
+class MockConvertToFailure extends Mock implements ConvertToFailure {
+  @override
+  Failure call(dynamic e) => super.noSuchMethod(Invocation.method(#call, [e]),
+      returnValue: Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e));
+}
 
 class MockConvertToSnapshot extends Mock
-    implements ConvertToSnapshot<Map<String, dynamic>, FruitSnapshot> {}
+    implements ConvertToSnapshot<FruitSnapshot> {
+  @override
+  FruitSnapshot call(Map data) =>
+      super.noSuchMethod(Invocation.method(#call, [data]),
+          returnValue: FruitSnapshot(timestamp: DateTime(2020, 10, 10)));
+}
 
 class FruitSnapshot extends CornerstoneSnapshot {
   final List<String> data;
 
-  FruitSnapshot({this.data = const [], DateTime timestamp})
+  FruitSnapshot({this.data = const [], required DateTime timestamp})
       : super(clock: const Clock(), timestamp: timestamp);
 
   @override
-  List<Object> get props => [timestamp, data];
+  List<Object?> get props => [timestamp, data];
 }
 
 class FruitQueryParam extends Equatable {
   final String name;
 
-  const FruitQueryParam({this.name});
+  const FruitQueryParam({required this.name});
 
   @override
-  List<Object> get props => [name];
+  List<Object?> get props => [name];
 }
 
 abstract class FruitRepository
@@ -44,17 +65,16 @@ abstract class FruitRepository
 class FruitRepositoryImpl extends FruitRepository {
   @override
   final ConvertToFailure convertToFailure;
-  final ConvertToSnapshot<Map<String, dynamic>, FruitSnapshot>
-      convertToSnapshot;
+  final ConvertToSnapshot<FruitSnapshot> convertToSnapshot;
   final HiveInterface hive;
 
   @override
   FruitSnapshot snapshot;
 
   FruitRepositoryImpl({
-    @required this.hive,
-    @required this.convertToFailure,
-    @required this.convertToSnapshot,
+    required this.hive,
+    required this.convertToFailure,
+    required this.convertToSnapshot,
   }) : snapshot = FruitSnapshot(
           data: [],
           timestamp: DateTime.parse('2021-01-10T10:00:00Z').toLocal(),
@@ -62,24 +82,25 @@ class FruitRepositoryImpl extends FruitRepository {
 
   @override
   Map<String, dynamic> get asJson => <String, dynamic>{
-        'data': snapshot?.data,
-        'timestamp': snapshot?.timestamp?.toUtc()?.toIso8601String()
+        'data': snapshot.data,
+        'timestamp': snapshot.timestamp.toUtc().toIso8601String()
       };
 }
 
+@GenerateMocks([HiveInterface])
 void main() {
   final dateFixture = DateTime.parse('2021-01-10T10:00:00Z').toLocal();
-  MockBox box;
-  MockConvertToFailure convertToFailure;
-  MockConvertToSnapshot convertToSnapshot;
-  FruitRepositoryImpl repo;
-  MockHive hive;
+  late MockBox box;
+  late MockConvertToFailure convertToFailure;
+  late ConvertToSnapshot<FruitSnapshot> convertToSnapshot;
+  late FruitRepositoryImpl repo;
+  late MockHiveInterface hive;
 
   setUp(() {
     convertToSnapshot = MockConvertToSnapshot();
     convertToFailure = MockConvertToFailure();
     box = MockBox();
-    hive = MockHive();
+    hive = MockHiveInterface();
     repo = FruitRepositoryImpl(
       hive: hive,
       convertToFailure: convertToFailure,
@@ -87,6 +108,7 @@ void main() {
     );
 
     when(hive.openBox(any)).thenAnswer((_) async => box);
+    when(box.clear()).thenAnswer((_) async => 0);
   });
   group('CornerstonePersistenceRepositoryMixin', () {
     test('storageName should be FruitRepositoryImpl', () {
@@ -99,8 +121,8 @@ void main() {
         'and return the result of convertToFailure',
         () async {
           final e = HiveError('TEST_ERROR');
-          when(box.putAll(any)).thenThrow(e);
-          when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+          when(box.putAll(repo.asJson)).thenThrow(e);
+          when(convertToFailure(e)).thenReturn(Failure(name: 'TEST_ERROR'));
 
           final result = await repo.save();
 
@@ -132,7 +154,7 @@ void main() {
           'and return the result of convertToFailure', () async {
         final e = HiveError('TEST_ERROR');
         when(box.clear()).thenThrow(e);
-        when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+        when(convertToFailure(e)).thenReturn(Failure(name: 'TEST_ERROR'));
 
         final result = await repo.clear();
 
@@ -162,7 +184,7 @@ void main() {
         () async {
           final e = HiveError('TEST_ERROR');
           when(box.toMap()).thenThrow(e);
-          when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+          when(convertToFailure(e)).thenReturn(Failure(name: 'TEST_ERROR'));
 
           final result = await repo.load();
 
@@ -177,11 +199,12 @@ void main() {
       );
 
       test('should assign snapshot', () async {
-        when(box.toMap()).thenReturn(<String, dynamic>{
+        final mapFixture = <String, dynamic>{
           'data': ['Apple'],
           'timestamp': '2021-01-10T10:00:00Z'
-        });
-        when(convertToSnapshot(any)).thenReturn(FruitSnapshot(
+        };
+        when(box.toMap()).thenReturn(mapFixture);
+        when(convertToSnapshot(mapFixture)).thenReturn(FruitSnapshot(
           data: ['Apple'],
           timestamp: dateFixture,
         ));
@@ -192,10 +215,7 @@ void main() {
         );
         expect(
           repo.snapshot,
-          FruitSnapshot(
-            data: ['Apple'],
-            timestamp: dateFixture,
-          ),
+          FruitSnapshot(data: ['Apple'], timestamp: dateFixture),
         );
         verifyInOrder([
           hive.openBox(repo.storageName),

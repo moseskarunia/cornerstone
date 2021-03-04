@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
 /// Failure is a "nice" way to represent errors instead of throwing
 /// an exception.
@@ -9,10 +8,10 @@ class Failure<T> extends Equatable {
   final String name;
 
   /// You can put anything here
-  final T details;
+  final T? details;
 
-  const Failure({@required this.name, this.details});
+  const Failure({required this.name, this.details});
 
   @override
-  List<Object> get props => [name, details];
+  List<Object?> get props => [name, details];
 }

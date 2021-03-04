@@ -1,7 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta/meta.dart';
 
 /// Base snapshot abstract with several convenience properties.
 /// Don't forget to add [timestamp] in your implementation's props.
@@ -32,15 +31,15 @@ abstract class CornerstoneSnapshot extends Equatable {
   Duration get age => timestamp.difference(clock.now());
 
   CornerstoneSnapshot({
-    @required this.timestamp,
+    required this.timestamp,
     this.clock = const Clock(),
-  }) : assert(clock != null && timestamp != null);
+  });
 }
 
 /// Parse string date to DateTime object
-DateTime dateTimeFromString(String date) =>
+DateTime? dateTimeFromString(String? date) =>
     date != null && date.isNotEmpty ? DateTime.parse(date).toLocal() : null;
 
 /// Parse DateTime object to String
-String dateTimeToString(DateTime date) =>
+String? dateTimeToString(DateTime? date) =>
     date != null ? date.toUtc().toIso8601String() : null;

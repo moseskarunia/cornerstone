@@ -15,10 +15,14 @@ import 'package:meta/meta.dart';
 mixin CornerstonePersistentRepositoryMixin<Snap>
     on LocallyPersistentRepository<Snap> {
   HiveInterface get hive;
-  ConvertToFailure get convertToFailure;
-  ConvertToSnapshot<Map<String, dynamic>, Snap> get convertToSnapshot;
+  ConvertToFailure<dynamic> get convertToFailure;
+  ConvertToSnapshot<Snap> get convertToSnapshot;
 
-  Snap snapshot;
+  /// Snapshot of this repo. Need to be named [snapshot] to make it accessible
+  /// accessible from mixin. This is late-typed, so it MUST have a default value
+  /// at the start of this class initialization to make it always non-nullable
+  /// afterward.
+  late Snap snapshot;
 
   @override
   @visibleForOverriding

@@ -65,7 +65,7 @@ abstract class LocallyPersistentRepository<T> {
   ///
   /// If you need to modify this, override [id] instead.
   @nonVirtual
-  String get storageName => '${this.runtimeType.toString()}${id ?? ''}';
+  String get storageName => '${this.runtimeType.toString()}$id';
 
   /// If somehow you need more than one repositories with a same type,
   /// you can override [id] to distinguish those.

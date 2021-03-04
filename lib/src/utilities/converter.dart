@@ -24,13 +24,13 @@ import 'package:cornerstone/src/core/failure.dart';
 ///   }
 /// }
 /// ```
-abstract class ConvertToFailure<T> {
-  Failure<T> call(dynamic e);
+abstract class ConvertToFailure<Type> {
+  Failure<Type> call(dynamic e);
 }
 
 /// Convert to snapshot is a mockable function which used to generate
 /// Snapshot from data. Used in utility repos such as
 /// [CornerstonePersistentRepositoryMixin].
-abstract class ConvertToSnapshot<Type, Snap> {
-  Snap call(Type data);
+abstract class ConvertToSnapshot<Snap> {
+  Snap call(Map<String, dynamic> data);
 }

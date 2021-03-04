@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
 
 /// An exception to encapsulate other exceptions from data source layer or below
 /// to make repository layer even more decoupled. The fields of this class is
@@ -10,10 +9,10 @@ class CornerstoneException<T> extends Equatable implements Exception {
   final String name;
 
   /// You can put anything here
-  final T details;
+  final T? details;
 
-  const CornerstoneException({@required this.name, this.details});
+  const CornerstoneException({required this.name, this.details});
 
   @override
-  List<Object> get props => [name, details];
+  List<Object?> get props => [name, details];
 }

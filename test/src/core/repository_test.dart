@@ -60,9 +60,6 @@ class NulledIdRepo with LocallyPersistentRepository<Map<String, dynamic>> {
   Future<Either<Failure, Unit>> save() {
     throw UnimplementedError();
   }
-
-  @override
-  String get id => null;
 }
 
 void main() {
