@@ -19,7 +19,7 @@ void main() async {
 
   DateFormat formatter = DateFormat('EEE, dd MMM yyyy (HH:mm:ss)', 'en_US');
 
-  String selectedOption;
+  String? selectedOption;
 
   do {
     print(
@@ -32,13 +32,13 @@ void main() async {
       'Enter your choice = ',
     );
 
-    selectedOption = stdin.readLineSync(encoding: Encoding.getByName('utf-8'));
+    selectedOption = stdin.readLineSync(encoding: Encoding.getByName('utf-8')!);
 
     if (selectedOption == '0') {
       print('Bye bye!\n');
     } else if (selectedOption == '1' || selectedOption == '2') {
       print('Please wait...\n');
-      Either<Failure, PeopleSnapshot> result;
+      late Either<Failure, PeopleSnapshot> result;
       switch (selectedOption) {
         case '1':
           result = await GetIt.I<GetPeople>()();
@@ -53,7 +53,7 @@ void main() async {
         (d) {
           print(
             '[SUCCESS]\n'
-            'Data Fetched At = ${d.updatedAt != null ? formatter.format(d.updatedAt) : 'N/A'}\n'
+            'Data Fetched At = ${formatter.format(d.updatedAt)}\n'
             'Stored Locally? = ${d.isSaved}\n'
             'Data = ${d.data}\n\n'
             'Current Time = ${formatter.format(DateTime.now())}\n',

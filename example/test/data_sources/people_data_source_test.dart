@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class MockClient extends Mock implements Dio {}
+import 'people_data_source_test.mocks.dart';
 
-class MockResponse extends Mock implements Response {}
-
+@GenerateMocks([Dio, Response])
 void main() {
   final jsonListFixture = [
     <String, dynamic>{
@@ -26,11 +26,12 @@ void main() {
     Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
     Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
   ];
-  MockClient client;
-  PeopleDataSource dataSource;
+
+  late MockDio client;
+  late PeopleDataSource dataSource;
 
   setUp(() {
-    client = MockClient();
+    client = MockDio();
     dataSource = PeopleDataSourceImpl(client: client);
   });
 
@@ -40,13 +41,12 @@ void main() {
     () async {
       final response = MockResponse();
       when(response.data).thenReturn(jsonListFixture);
-      when(client.get(any)).thenAnswer((_) async => response);
+      when(client.get('https://jsonplaceholder.typicode.com/users'))
+          .thenAnswer((_) async => response);
 
       final results = await dataSource.readMany();
 
       expect(results, peopleListFixture);
-
-      verify(client.get('https://jsonplaceholder.typicode.com/users'));
     },
   );
 }

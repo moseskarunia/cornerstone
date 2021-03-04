@@ -14,10 +14,10 @@ class Person extends Equatable {
   final int id;
   final String name, email;
 
-  const Person({this.id, this.name, this.email});
+  const Person({required this.id, required this.name, required this.email});
 
   @override
-  List<Object> get props => [id, name, email];
+  List<Object?> get props => [id, name, email];
 
   factory Person.fromJson(Map json) => _$PersonFromJson(json);
   Map<String, dynamic> toJson() => _$PersonToJson(this);
