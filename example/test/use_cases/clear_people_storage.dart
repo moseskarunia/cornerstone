@@ -4,7 +4,7 @@ import 'package:example/use_cases/clear_people_storage.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'mock_repo.dart';
+import 'shared_mock_repo.dart';
 
 void main() {
   final failureFixture = Failure(name: 'TEST_ERROR');

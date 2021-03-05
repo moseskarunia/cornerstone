@@ -6,72 +6,64 @@ import 'package:example/entities/person.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'auto_persistent_people_repository.g.dart';
+part 'people_repository.g.dart';
 
 @JsonSerializable(explicitToJson: true, anyMap: true)
-class NewPeopleSnapshot extends CornerstoneSnapshot {
+class PeopleSnapshot extends CornerstoneSnapshot {
   @JsonKey(defaultValue: [])
   final List<Person> data;
 
-  NewPeopleSnapshot({this.data = const [], required DateTime timestamp})
+  PeopleSnapshot({this.data = const [], required DateTime timestamp})
       : super(clock: const Clock(), timestamp: timestamp);
 
   @override
   List<Object?> get props => [timestamp, data];
 
-  factory NewPeopleSnapshot.fromJson(Map json) =>
-      _$NewPeopleSnapshotFromJson(json);
+  factory PeopleSnapshot.fromJson(Map json) => _$PeopleSnapshotFromJson(json);
 
-  Map<String, dynamic> toJson() => _$NewPeopleSnapshotToJson(this);
+  Map<String, dynamic> toJson() => _$PeopleSnapshotToJson(this);
 }
 
 /// Equivalent to [PeopleRepository] but this time, the Hive functionality is
 /// built-in.
-abstract class AutoPersistentPeopleRepository
+abstract class PeopleRepository
     with
-        LocallyPersistentRepository<NewPeopleSnapshot>,
-        CornerstonePersistentRepositoryMixin<NewPeopleSnapshot> {
-  Future<Either<Failure, NewPeopleSnapshot>> getPeople();
+        LocallyPersistentRepository<PeopleSnapshot>,
+        CornerstonePersistentRepositoryMixin<PeopleSnapshot> {
+  Future<Either<Failure, PeopleSnapshot>> getPeople();
 }
 
-class AutoPersistentPeopleRepositoryImpl
-    extends AutoPersistentPeopleRepository {
+class PeopleRepositoryImpl extends PeopleRepository {
   final PeopleDataSource dataSource;
   final Clock clock;
   final HiveInterface hive;
   final ConvertToFailure convertToFailure;
-  final ConvertToSnapshot<NewPeopleSnapshot> convertToSnapshot;
+  final ConvertToSnapshot<PeopleSnapshot> convertToSnapshot;
 
   @override
-  NewPeopleSnapshot snapshot;
+  PeopleSnapshot snapshot;
 
   Map<String, dynamic> get asJson => snapshot.toJson();
 
-  AutoPersistentPeopleRepositoryImpl({
+  PeopleRepositoryImpl({
     required this.dataSource,
     required this.hive,
     required this.convertToFailure,
     required this.convertToSnapshot,
     this.clock = const Clock(),
-  }) : snapshot = NewPeopleSnapshot(timestamp: clock.now());
+  }) : snapshot = PeopleSnapshot(timestamp: clock.now());
 
   @override
-  Future<Either<Failure, NewPeopleSnapshot>> getPeople() async {
+  Future<Either<Failure, PeopleSnapshot>> getPeople() async {
     try {
       final results = await dataSource.readMany();
 
-      snapshot = NewPeopleSnapshot(
-        data: results,
-        timestamp: clock.now(),
-      );
+      snapshot = PeopleSnapshot(data: results, timestamp: clock.now());
 
       final saveResult = await save();
 
       if (saveResult.isLeft()) {
-        snapshot = NewPeopleSnapshot(
-          data: snapshot.data,
-          timestamp: clock.now(),
-        );
+        snapshot = PeopleSnapshot(data: snapshot.data, timestamp: clock.now());
       }
 
       return Right(snapshot);

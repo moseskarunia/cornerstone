@@ -5,13 +5,13 @@ import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
-import 'package:example/repositories/auto_persistent_people_repository.dart';
+import 'package:example/repositories/people_repository.dart';
 import 'package:hive/hive.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'auto_persistent_people_repository_test.mocks.dart';
+import 'people_repository_test.mocks.dart';
 
 class MockBox extends Mock implements Box {
   @override
@@ -34,11 +34,11 @@ class MockConvertToFailure extends Mock implements ConvertToFailure {
 }
 
 class MockConvertToSnapshot extends Mock
-    implements ConvertToSnapshot<NewPeopleSnapshot> {
+    implements ConvertToSnapshot<PeopleSnapshot> {
   @override
-  NewPeopleSnapshot call(Map data) =>
+  PeopleSnapshot call(Map data) =>
       super.noSuchMethod(Invocation.method(#call, [data]),
-          returnValue: NewPeopleSnapshot(timestamp: DateTime(2020, 10, 10)));
+          returnValue: PeopleSnapshot(timestamp: DateTime(2020, 10, 10)));
 }
 
 class MockDataSource extends Mock implements PeopleDataSource {
@@ -74,7 +74,7 @@ void main() {
       'data': jsonListFixture,
     };
 
-    final snapFixture = NewPeopleSnapshot(
+    final snapFixture = PeopleSnapshot(
       data: peopleListFixture,
       timestamp: dateFixture,
     );
@@ -85,7 +85,7 @@ void main() {
     late MockHiveInterface hive;
     late MockConvertToFailure convertToFailure;
     late MockConvertToSnapshot convertToSnapshot;
-    late AutoPersistentPeopleRepositoryImpl repo;
+    late PeopleRepositoryImpl repo;
     late PeopleDataSource dataSource;
 
     setUp(() {
@@ -95,7 +95,7 @@ void main() {
       convertToSnapshot = MockConvertToSnapshot();
       dataSource = MockDataSource();
 
-      repo = AutoPersistentPeopleRepositoryImpl(
+      repo = PeopleRepositoryImpl(
         hive: hive,
         convertToFailure: convertToFailure,
         convertToSnapshot: convertToSnapshot,
@@ -105,12 +105,12 @@ void main() {
       when(hive.openBox(any)).thenAnswer((_) async => box);
     });
 
-    group('NewPeopleSnapshot', () {
+    group('PeopleSnapshot', () {
       test('props', () {
         expect(snapFixture.props, [dateFixture, peopleListFixture]);
       });
       test('fromJson', () {
-        expect(NewPeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
+        expect(PeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
       });
       test('toJson', () {
         expect(snapFixture.toJson(), snapJsonFixture);
@@ -126,7 +126,7 @@ void main() {
     });
 
     test('repo should be initialized with empty snapshot', () {
-      expect(repo.snapshot, NewPeopleSnapshot(timestamp: clockFixture.now()));
+      expect(repo.snapshot, PeopleSnapshot(timestamp: clockFixture.now()));
     });
 
     group('getPeople', () {
@@ -141,7 +141,7 @@ void main() {
 
           expect(
             (result as Right).value,
-            NewPeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
+            PeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
           );
           verifyInOrder([
             dataSource.readMany(),

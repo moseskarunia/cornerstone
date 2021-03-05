@@ -1,15 +1,15 @@
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
-import 'package:example/repositories/auto_persistent_people_repository.dart';
+import 'package:example/repositories/people_repository.dart';
 import 'package:example/use_cases/get_people.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'mock_repo.dart';
+import 'shared_mock_repo.dart';
 
 void main() {
-  final snapFixture = NewPeopleSnapshot(
+  final snapFixture = PeopleSnapshot(
     data: [
       Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
       Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
