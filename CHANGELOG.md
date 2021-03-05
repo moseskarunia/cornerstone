@@ -1,5 +1,6 @@
 ## [2.0.0] - 4 March 2021
 - New: Null-safety! To use, update your dart version to >=2.12.0, or use flutter 2.0.0
+- Update: [CornerstonePersistentRepositoryMixin] If load is called on empty storage, will return a nicer Failure.
 
 ## [1.1.1] - 24 February 2021
 - Fix: Properly export `CornerstoneException`.

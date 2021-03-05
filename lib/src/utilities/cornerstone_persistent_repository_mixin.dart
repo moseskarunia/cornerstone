@@ -33,7 +33,6 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
       return Right(unit);
     } catch (e) {
       return Left(convertToFailure(e));
-      // return Left(Failure(name: 'UNEXPECTED_ERROR', details: e.toString()));
     }
   }
 
@@ -45,14 +44,32 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
       return Right(unit);
     } catch (e) {
       return Left(convertToFailure(e));
-      // return Left(Failure(name: 'UNEXPECTED_ERROR', details: e.toString()));
     }
   }
 
+  /// Load data from local storage. If empty, will return:
+  ///
+  /// ```dart
+  /// Left(Failure(
+  ///    name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
+  ///    details: <String, dynamic>{'storageName': storageName},
+  /// ));
+  /// ```
+  /// 
+  /// If you need to return empty snapshot instead, you can make a conditional 
+  /// block in your use case that checks err.cornerstone.EMPTY_LOCAL_STORAGE
+  /// as failure name.
   @override
   Future<Either<Failure, Snap>> load() async {
     try {
       final box = await hive.openBox(storageName);
+
+      if (box.toMap().isEmpty) {
+        return Left(Failure(
+          name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
+          details: <String, dynamic>{'storageName': storageName},
+        ));
+      }
 
       /// For some reason, this is the only safe way I can get box data as
       /// `Map<String, dynamic>` (Using cast throws an error).

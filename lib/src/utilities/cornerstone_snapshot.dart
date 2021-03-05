@@ -30,7 +30,7 @@ abstract class CornerstoneSnapshot extends Equatable {
   /// Difference of current datetime compared to [timestamp].
   Duration get age => timestamp.difference(clock.now());
 
-  CornerstoneSnapshot({
+  const CornerstoneSnapshot({
     required this.timestamp,
     this.clock = const Clock(),
   });

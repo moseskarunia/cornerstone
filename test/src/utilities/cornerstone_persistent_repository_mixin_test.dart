@@ -198,7 +198,29 @@ void main() {
         },
       );
 
-      test('should assign snapshot', () async {
+      test(
+        'should return err.cornerstone.EMPTY_LOCAL_STORAGE',
+        () async {
+          when(box.toMap()).thenReturn({});
+
+          final result = await repo.load();
+
+          expect(
+            (result as Left).value,
+            Failure<dynamic>(
+              name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
+              details: <String, dynamic>{'storageName': 'FruitRepositoryImpl'},
+            ),
+          );
+
+          verifyInOrder([
+            hive.openBox(repo.storageName),
+            box.toMap(),
+          ]);
+        },
+      );
+
+      test('should assign snapshot and return the snapshot', () async {
         final mapFixture = <String, dynamic>{
           'data': ['Apple'],
           'timestamp': '2021-01-10T10:00:00Z'

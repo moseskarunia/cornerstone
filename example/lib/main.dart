@@ -53,8 +53,7 @@ void main() async {
         (d) {
           print(
             '[SUCCESS]\n'
-            'Data Fetched At = ${formatter.format(d.updatedAt)}\n'
-            'Stored Locally? = ${d.isSaved}\n'
+            'Data Fetched At = ${formatter.format(d.timestamp)}\n'
             'Data = ${d.data}\n\n'
             'Current Time = ${formatter.format(DateTime.now())}\n',
           );
@@ -84,7 +83,12 @@ void initArchitecture() {
     () => PeopleDataSourceImpl(client: GetIt.I()),
   );
   GetIt.I.registerLazySingleton<PeopleRepository>(
-    () => PeopleRepositoryImpl(dataSource: GetIt.I(), hive: Hive),
+    () => PeopleRepositoryImpl(
+      dataSource: GetIt.I(),
+      hive: Hive,
+      convertToFailure: ConvertPeopleExceptionToFailure(),
+      convertToSnapshot: ConvertToPeopleSnapshot(),
+    ),
   );
   GetIt.I.registerLazySingleton(() => GetPeople(repo: GetIt.I()));
   GetIt.I.registerLazySingleton(() => LoadPeople(repo: GetIt.I()));
