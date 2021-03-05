@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dio/dio.dart';
 
-abstract class PeopleDataSource extends MultipleGetterDataSource<Person, Null> {
+abstract class PeopleDataSource extends MultipleGetterDataSource<Person, Unit> {
 }
 
 class PeopleDataSourceImpl extends PeopleDataSource {
@@ -14,7 +15,7 @@ class PeopleDataSourceImpl extends PeopleDataSource {
   PeopleDataSourceImpl({required this.client});
 
   @override
-  FutureOr<List<Person>> readMany({Null param}) async {
+  FutureOr<List<Person>> readMany({Unit param = unit}) async {
     final result = await client.get(
       'https://jsonplaceholder.typicode.com/users',
     );
