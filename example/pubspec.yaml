@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   clock: ^1.1.0
-  # copy_with_extension: "^2.0.0-nullsafety.1"
   cornerstone:
     path: ../
   dartz: ^0.10.0-nullsafety.1
@@ -24,7 +23,6 @@ dependencies:
 
 dev_dependencies:
   build_runner: "^1.11.5"
-  # copy_with_extension_gen: ^2.0.0-nullsafety.1
   coverage: ^1.0.1
   json_serializable: ^4.0.2
   mockito: ^5.0.0
