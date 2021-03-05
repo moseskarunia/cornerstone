@@ -1,6 +1,7 @@
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
+import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -35,6 +36,7 @@ abstract class AutoPersistentPeopleRepository
 
 class AutoPersistentPeopleRepositoryImpl
     extends AutoPersistentPeopleRepository {
+  final PeopleDataSource dataSource;
   final Clock clock;
   final HiveInterface hive;
   final ConvertToFailure convertToFailure;
@@ -46,15 +48,36 @@ class AutoPersistentPeopleRepositoryImpl
   Map<String, dynamic> get asJson => snapshot.toJson();
 
   AutoPersistentPeopleRepositoryImpl({
+    required this.dataSource,
     required this.hive,
     required this.convertToFailure,
     required this.convertToSnapshot,
     this.clock = const Clock(),
-  }) : snapshot = NewPeopleSnapshot(timestamp: (const Clock()).now());
+  }) : snapshot = NewPeopleSnapshot(timestamp: clock.now());
 
   @override
   Future<Either<Failure, NewPeopleSnapshot>> getPeople() async {
-    throw UnimplementedError();
+    try {
+      final results = await dataSource.readMany();
+
+      snapshot = NewPeopleSnapshot(
+        data: results,
+        timestamp: clock.now(),
+      );
+
+      final saveResult = await save();
+
+      if (saveResult.isLeft()) {
+        snapshot = NewPeopleSnapshot(
+          data: snapshot.data,
+          timestamp: clock.now(),
+        );
+      }
+
+      return Right(snapshot);
+    } catch (e) {
+      return Left(convertToFailure(e));
+    }
   }
 }
 

@@ -16,12 +16,19 @@ class PeopleDataSourceImpl extends PeopleDataSource {
 
   @override
   FutureOr<List<Person>> readMany({Unit param = unit}) async {
-    final result = await client.get(
-      'https://jsonplaceholder.typicode.com/users',
-    );
+    try {
+      final result = await client.get(
+        'https://jsonplaceholder.typicode.com/users',
+      );
 
-    return List<dynamic>.from(result.data)
-        .map((e) => Person.fromJson(Map<String, dynamic>.from(e)))
-        .toList();
+      return List<dynamic>.from(result.data)
+          .map((e) => Person.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    } catch (e) {
+      throw CornerstoneException<dynamic>(
+        name: 'err.app.UNEXPECTED_ERROR',
+        details: e,
+      );
+    }
   }
 }

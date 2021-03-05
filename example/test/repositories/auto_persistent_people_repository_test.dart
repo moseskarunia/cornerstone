@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
+import 'package:dartz/dartz.dart';
+import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/auto_persistent_people_repository.dart';
 import 'package:hive/hive.dart';
@@ -37,6 +41,13 @@ class MockConvertToSnapshot extends Mock
           returnValue: NewPeopleSnapshot(timestamp: DateTime(2020, 10, 10)));
 }
 
+class MockDataSource extends Mock implements PeopleDataSource {
+  @override
+  FutureOr<List<Person>> readMany({Unit param = unit}) async =>
+      await super.noSuchMethod(Invocation.method(#readMany, [unit]),
+          returnValue: <Person>[]);
+}
+
 @GenerateMocks([HiveInterface])
 void main() {
   group('AutoPersistentPeopleRepositoryImpl', () {
@@ -68,23 +79,28 @@ void main() {
       timestamp: dateFixture,
     );
 
+    final clockFixture = Clock.fixed(DateTime(2020, 10, 10));
+
     late MockBox box;
     late MockHiveInterface hive;
-    late MockConvertToFailure convert;
+    late MockConvertToFailure convertToFailure;
     late MockConvertToSnapshot convertToSnapshot;
     late AutoPersistentPeopleRepositoryImpl repo;
+    late PeopleDataSource dataSource;
 
     setUp(() {
       box = MockBox();
       hive = MockHiveInterface();
-      convert = MockConvertToFailure();
+      convertToFailure = MockConvertToFailure();
       convertToSnapshot = MockConvertToSnapshot();
+      dataSource = MockDataSource();
 
       repo = AutoPersistentPeopleRepositoryImpl(
         hive: hive,
-        convertToFailure: convert,
+        convertToFailure: convertToFailure,
         convertToSnapshot: convertToSnapshot,
-        clock: Clock.fixed(DateTime(2020, 10, 10)),
+        clock: clockFixture,
+        dataSource: dataSource,
       );
       when(hive.openBox(any)).thenAnswer((_) async => box);
     });
@@ -109,8 +125,51 @@ void main() {
       expect(repo.asJson, snapJsonFixture);
     });
 
-    test('getPeople should throw UnimplementedError', () {
-      expectLater(() => repo.getPeople(), throwsA(isA<UnimplementedError>()));
+    test('repo should be initialized with empty snapshot', () {
+      expect(repo.snapshot, NewPeopleSnapshot(timestamp: clockFixture.now()));
+    });
+
+    group('getPeople', () {
+      test(
+        'should return Right with PeopleSnapshot',
+        () async {
+          when(dataSource.readMany()).thenAnswer(
+            (_) async => peopleListFixture,
+          );
+
+          final result = await repo.getPeople();
+
+          expect(
+            (result as Right).value,
+            NewPeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
+          );
+          verifyInOrder([
+            dataSource.readMany(),
+            hive.openBox(repo.storageName),
+            box.putAll(snapJsonFixture),
+          ]);
+        },
+      );
+
+      test(
+        'should return Left with result of convertToFailure',
+        () async {
+          final e = Exception();
+          when(dataSource.readMany()).thenThrow(e);
+          when(convertToFailure(e)).thenReturn(
+            Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e),
+          );
+
+          final result = await repo.getPeople();
+
+          expect(
+            (result as Left).value,
+            Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e),
+          );
+
+          verify(dataSource.readMany()).called(1);
+        },
+      );
     });
   });
 }

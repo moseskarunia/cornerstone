@@ -1,3 +1,4 @@
+import 'package:cornerstone/cornerstone.dart';
 import 'package:dio/dio.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
@@ -47,6 +48,27 @@ void main() {
       final results = await dataSource.readMany();
 
       expect(results, peopleListFixture);
+    },
+  );
+
+  test(
+    'PeopleDataSource should encapsulate thrown exceptions '
+    'with CornerstoneException',
+    () async {
+      final dioErrorFixture = DioError(
+        type: DioErrorType.response,
+        error: <String, dynamic>{'status': 400},
+      );
+      when(client.get('https://jsonplaceholder.typicode.com/users'))
+          .thenThrow(dioErrorFixture);
+
+      await expectLater(
+        () async => await dataSource.readMany(),
+        throwsA(CornerstoneException<dynamic>(
+          name: 'err.app.UNEXPECTED_ERROR',
+          details: dioErrorFixture,
+        )),
+      );
     },
   );
 }
