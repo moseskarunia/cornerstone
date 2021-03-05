@@ -2,16 +2,17 @@ import 'dart:async';
 
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
-import 'package:example/repositories/people_repository.dart';
-import 'package:meta/meta.dart';
+import 'package:example/repositories/auto_persistent_people_repository.dart';
 
-/// Call the server and return PeopleSnapshot
-class GetPeople extends UseCase<Failure, PeopleSnapshot, Null> {
-  final PeopleRepository repo;
+/// Call the server and return NewPeopleSnapshot.
+/// Unit is just a way to represent void in a non void way.
+class GetPeople extends UseCase<Failure, NewPeopleSnapshot, Unit> {
+  final AutoPersistentPeopleRepository repo;
 
-  GetPeople({@required this.repo});
+  GetPeople({required this.repo});
+
   @override
-  FutureOr<Either<Failure, PeopleSnapshot>> call({Null param}) async {
+  FutureOr<Either<Failure, NewPeopleSnapshot>> call({Unit param = unit}) async {
     return await repo.getPeople();
   }
 }
