@@ -1,17 +1,16 @@
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
-import 'package:example/repositories/people_repository.dart';
 import 'package:example/use_cases/clear_people_storage.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class MockRepo extends Mock implements PeopleRepository {}
+import 'mock_repo.dart';
 
 void main() {
   final failureFixture = Failure(name: 'TEST_ERROR');
 
-  MockRepo repo;
-  ClearPeopleStorage clear;
+  late MockRepo repo;
+  late ClearPeopleStorage clear;
 
   setUp(() {
     repo = MockRepo();

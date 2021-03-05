@@ -6,16 +6,7 @@ import 'package:example/use_cases/get_people.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-class MockResult extends Mock implements Either<Failure, NewPeopleSnapshot> {}
-
-class MockRepo extends Mock implements AutoPersistentPeopleRepository {
-  @override
-  Future<Either<Failure, NewPeopleSnapshot>> getPeople() async =>
-      await super.noSuchMethod(
-        Invocation.method(#getPeople, []),
-        returnValue: MockResult(),
-      );
-}
+import 'mock_repo.dart';
 
 void main() {
   final snapFixture = NewPeopleSnapshot(
