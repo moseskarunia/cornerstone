@@ -55,8 +55,8 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   ///    details: <String, dynamic>{'storageName': storageName},
   /// ));
   /// ```
-  /// 
-  /// If you need to return empty snapshot instead, you can make a conditional 
+  ///
+  /// If you need to return empty snapshot instead, you can make a conditional
   /// block in your use case that checks err.cornerstone.EMPTY_LOCAL_STORAGE
   /// as failure name.
   @override
