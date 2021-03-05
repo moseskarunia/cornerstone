@@ -73,24 +73,18 @@ class PeopleRepositoryImpl extends PeopleRepository {
   }
 }
 
-/// You can reuse this across many repositories and many repo's functions.
-/// The efficiency gain will be more impactful in a large project.
-///
-/// Since [PeopleMultipleGetterRepositoryImpl] is not actually used besides
-/// in test, then this implementation is commented out. Mocked object will be
-/// used in test.
-///
-// class ConvertPeopleExceptionToFailure extends ConvertToFailure {
-//   @override
-//   Failure call(dynamic e) {
-//     if (e is HiveError) {
-//       return Failure(name: e.message);
-//     } else if (e is DioError) {
-//       return Failure(name: 'FAILED_TO_RETRIEVE_DATA', details: e.toString());
-//     } else if (e is Exception) {
-//       return Failure(name: 'UNEXPECTED_ERROR', details: e.toString());
-//     } else {
-//       return Failure(name: 'UNEXPECTED_ERROR');
-//     }
-//   }
-// }
+class ConvertPeopleExceptionToFailure extends ConvertToFailure {
+  @override
+  Failure call(dynamic e) {
+    if (e is CornerstoneException) {
+      return Failure(name: e.name, details: e);
+    }
+    return Failure(name: 'err.app.UNEXPECTED_ERROR', details: e);
+  }
+}
+
+class ConvertToPeopleSnapshot extends ConvertToSnapshot<PeopleSnapshot> {
+  @override
+  PeopleSnapshot call(Map<String, dynamic> data) =>
+      PeopleSnapshot.fromJson(data);
+}

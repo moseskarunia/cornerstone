@@ -50,37 +50,36 @@ class MockDataSource extends Mock implements PeopleDataSource {
 
 @GenerateMocks([HiveInterface])
 void main() {
-  group('AutoPersistentPeopleRepositoryImpl', () {
-    final jsonListFixture = [
-      <String, dynamic>{
-        'id': 123,
-        'name': 'John Doe',
-        'email': 'johndoe@test.com',
-      },
-      <String, dynamic>{
-        'id': 456,
-        'name': 'Tony Stark',
-        'email': 'tony@starkindustries.com',
-      },
-    ];
-    final peopleListFixture = [
-      Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
-      Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
-    ];
-    final dateFixture = DateTime(2020, 10, 10);
+  final jsonListFixture = [
+    <String, dynamic>{
+      'id': 123,
+      'name': 'John Doe',
+      'email': 'johndoe@test.com',
+    },
+    <String, dynamic>{
+      'id': 456,
+      'name': 'Tony Stark',
+      'email': 'tony@starkindustries.com',
+    },
+  ];
+  final peopleListFixture = [
+    Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
+    Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
+  ];
+  final dateFixture = DateTime(2020, 10, 10);
 
-    final snapJsonFixture = {
-      'timestamp': dateFixture.toUtc().toIso8601String(),
-      'data': jsonListFixture,
-    };
+  final snapJsonFixture = {
+    'timestamp': dateFixture.toUtc().toIso8601String(),
+    'data': jsonListFixture,
+  };
 
-    final snapFixture = PeopleSnapshot(
-      data: peopleListFixture,
-      timestamp: dateFixture,
-    );
+  final snapFixture = PeopleSnapshot(
+    data: peopleListFixture,
+    timestamp: dateFixture,
+  );
 
-    final clockFixture = Clock.fixed(DateTime(2020, 10, 10));
-
+  final clockFixture = Clock.fixed(DateTime(2020, 10, 10));
+  group('PeopleRepository', () {
     late MockBox box;
     late MockHiveInterface hive;
     late MockConvertToFailure convertToFailure;
@@ -117,15 +116,14 @@ void main() {
       });
     });
 
-    test('storageName should be AutoPersistentPeopleRepositoryImpl', () {
-      expect(repo.storageName, 'AutoPersistentPeopleRepositoryImpl');
+    test('storageName', () {
+      expect(repo.storageName, 'PeopleRepositoryImpl');
     });
     test('asJson', () {
       repo.snapshot = snapFixture;
       expect(repo.asJson, snapJsonFixture);
     });
-
-    test('repo should be initialized with empty snapshot', () {
+    test('initial snapshot', () {
       expect(repo.snapshot, PeopleSnapshot(timestamp: clockFixture.now()));
     });
 
@@ -170,6 +168,33 @@ void main() {
           verify(dataSource.readMany()).called(1);
         },
       );
+    });
+  });
+
+  group('ConvertPeopleExceptionToFailure', () {
+    final converter = ConvertPeopleExceptionToFailure();
+    test('should return Left and converts CornerstoneException', () {
+      expect(
+        converter(const CornerstoneException(name: 'err.app.TEST_ERROR')),
+        const Failure<dynamic>(
+          name: 'err.app.TEST_ERROR',
+          details: const CornerstoneException(name: 'err.app.TEST_ERROR'),
+        ),
+      );
+    });
+    test('should return Left and returns err.app.UNEXPECTED_ERROR', () {
+      final e = Exception();
+      expect(
+        converter(e),
+        Failure<dynamic>(name: 'err.app.UNEXPECTED_ERROR', details: e),
+      );
+    });
+  });
+
+  group('ConvertToPeopleSnapshot', () {
+    final converter = ConvertToPeopleSnapshot();
+    test('should convert from Map', () {
+      expect(converter(snapJsonFixture), snapFixture);
     });
   });
 }
