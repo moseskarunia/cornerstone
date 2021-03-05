@@ -25,7 +25,6 @@ import 'package:cornerstone/src/core/failure.dart';
 /// }
 /// ```
 abstract class ConvertToFailure<Type> {
-  const ConvertToFailure();
   Failure<Type> call(dynamic e);
 }
 
@@ -33,6 +32,5 @@ abstract class ConvertToFailure<Type> {
 /// Snapshot from data. Used in utility repos such as
 /// [CornerstonePersistentRepositoryMixin].
 abstract class ConvertToSnapshot<Snap> {
-  const ConvertToSnapshot();
   Snap call(Map<String, dynamic> data);
 }
