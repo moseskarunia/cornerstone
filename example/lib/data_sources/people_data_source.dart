@@ -6,6 +6,8 @@ import 'package:cornerstone/cornerstone.dart';
 import 'package:dio/dio.dart';
 
 abstract class PeopleDataSource extends MultipleGetterDataSource<Person, Unit> {
+  @override
+  FutureOr<List<Person>> readMany({Unit param = unit});
 }
 
 class PeopleDataSourceImpl extends PeopleDataSource {

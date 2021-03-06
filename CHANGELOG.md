@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.3] - 6 March 2021
+- Update: Abstract classes' parameters are now required. A named param marked with `required` can still have its implementation accept default value instead of required. On the other hand, a non required param cannot be implemented with required. Therefore, for flexibility, all abstract classes' named parameters are now required. See example's people_data_source for more info.
+
 ## [2.0.0-nullsafety.2] - 5 March 2021
 - Update: Bump hive dependency to 2.0.0.
 

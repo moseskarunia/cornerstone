@@ -13,7 +13,7 @@ import 'dart:async';
 ///
 ///   final HttpClient client;
 ///
-///   const SessionDataSource({@required this.client});
+///   const SessionDataSource({required this.client});
 ///
 ///   @override
 ///   FutureOr<Session> readOne({GetParams params}) async {
@@ -27,7 +27,7 @@ import 'dart:async';
 ///
 /// Instead of throwing an exception, you should return Left instead.
 abstract class SingleGetterDataSource<Type, Param> {
-  FutureOr<Type> readOne({Param param});
+  FutureOr<Type> readOne({required Param param});
 }
 
 /// Implement this abstract in your data source if it can fetch some data.
@@ -43,7 +43,7 @@ abstract class SingleGetterDataSource<Type, Param> {
 ///
 ///   final HttpClient client;
 ///
-///   const PeopleDataSource({@required this.client});
+///   const PeopleDataSource({required this.client});
 ///
 ///   @override
 ///   FutureOr<List<Person>> readMany({GetParams params}) async {
@@ -55,7 +55,7 @@ abstract class SingleGetterDataSource<Type, Param> {
 /// If you can live with less type safety, you can simply use
 /// `Map<String,dynamic>` as Param.
 abstract class MultipleGetterDataSource<Type, Param> {
-  FutureOr<List<Type>> readMany({Param param});
+  FutureOr<List<Type>> readMany({required Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data creation.
@@ -69,7 +69,7 @@ abstract class MultipleGetterDataSource<Type, Param> {
 /// class AuthDataSource implements CreatorDataSource<Session, SignInParams> {
 ///   final HttpClient client;
 ///
-///   const AuthDataSource({@required this.client});
+///   const AuthDataSource({required this.client});
 ///
 ///   @override
 ///   FutureOr<Person> read({GetParams params}) async {
@@ -81,7 +81,7 @@ abstract class MultipleGetterDataSource<Type, Param> {
 /// If you can live with less type safety, you can simply use
 /// `Map<String,dynamic>` as Param.
 abstract class CreatorDataSource<Type, Param> {
-  FutureOr<Type> create({Param param});
+  FutureOr<Type> create({required Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data update
@@ -91,10 +91,10 @@ abstract class CreatorDataSource<Type, Param> {
 /// class PeopleDataSource implements UpdaterDataSource<Person, Person> {
 ///   final HttpClient client;
 ///
-///   const PeopleDataSource({@required this.client});
+///   const PeopleDataSource({required this.client});
 ///
 ///   @override
-///   FutureOr<Person> read({Person params}) async {
+///   FutureOr<Person> read({required Person params}) async {
 ///     /// Perform client.put() or something using json form of provided
 ///     /// Person object.
 ///   }
@@ -104,20 +104,21 @@ abstract class CreatorDataSource<Type, Param> {
 /// If you can live with less type safety, you can simply use
 /// `Map<String,dynamic>` as Param.
 abstract class UpdaterDataSource<Type, Param> {
-  FutureOr<Type> update({Param param});
+  FutureOr<Type> update({required Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data deletion.
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
 /// ```dart
-/// class SessionDataSource implements DeleterDataSource<void, Null> {
+/// class SessionDataSource implements DeleterDataSource<Unit, Unit> {
 ///   final HttpClient client;
 ///
-///   const SessionDataSource({@required this.client});
+///   const SessionDataSource({required this.client});
 ///
+///   /// Use unit to represent void
 ///   @override
-///   FutureOr<void> delete({Null params}) async {
+///   FutureOr<Unit> delete({Unit params = unit}) async {
 ///     /// Perform sign out
 ///   }
 /// }
@@ -127,5 +128,5 @@ abstract class UpdaterDataSource<Type, Param> {
 ///
 /// P.S. Signing out means deleting session. Therefore, deleter data source.
 abstract class DeleterDataSource<Type, Param> {
-  FutureOr<Type> delete({Param param});
+  FutureOr<Type> delete({required Param param});
 }
