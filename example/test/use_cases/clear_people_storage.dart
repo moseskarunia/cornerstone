@@ -7,7 +7,7 @@ import 'package:test/test.dart';
 import 'shared_mock_repo.dart';
 
 void main() {
-  final failureFixture = Failure(name: 'TEST_ERROR');
+  final failureFixture = Failure<Object>(name: 'TEST_ERROR', details: {});
 
   late MockRepo repo;
   late ClearPeopleStorage clear;

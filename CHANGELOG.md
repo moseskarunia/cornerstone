@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.7] - 8 March 2021
+- Update: Make `Failure` in `CornerstonePersistentRepositoryMixin` becomes `Failure<Object>`.
+
 ## [2.0.0-nullsafety.6] - 8 March 2021
 - Fix: `UseCase`'s call param now is correctly marked as `required`.
 

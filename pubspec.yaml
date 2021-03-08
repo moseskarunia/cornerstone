@@ -1,6 +1,6 @@
 name: cornerstone
 description: A library written in pure dart to help devs set up dart projects with a proper architecture without having to write a lot of boilerplate code. Inspired by clean architecture.
-version: 2.0.0-nullsafety.6
+version: 2.0.0-nullsafety.7
 repository: https://www.github.com/moseskarunia/cornerstone
 
 environment:

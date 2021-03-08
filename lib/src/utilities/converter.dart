@@ -14,12 +14,12 @@ import 'package:cornerstone/src/core/failure.dart';
 ///   /// Other codes
 /// }
 ///
-/// class ConvertMyExceptionToFailure<dynamic>{
-///   Failure<dynamic> call(Object e) {
+/// class ConvertMyExceptionToFailure<Object>{
+///   Failure<Object> call(Object e) {
 ///     if(e is MyException) {
-///       return Failure(name: e.name, details: e.details);
+///       return Failure<Object>(name: e.name, details: e.details);
 ///     } else {
-///       return Failure(name: 'UNEXPECTED_ERROR', details: e);
+///       return Failure<Object>(name: 'UNEXPECTED_ERROR', details: e);
 ///     }
 ///   }
 /// }

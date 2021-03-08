@@ -26,7 +26,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
 
   @override
   @visibleForOverriding
-  Future<Either<Failure, Unit>> save() async {
+  Future<Either<Failure<Object>, Unit>> save() async {
     try {
       final box = await hive.openBox(storageName);
       await box.putAll(asJson);
@@ -37,7 +37,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   }
 
   @override
-  Future<Either<Failure, Unit>> clear() async {
+  Future<Either<Failure<Object>, Unit>> clear() async {
     try {
       final box = await hive.openBox(storageName);
       await box.clear();
@@ -50,7 +50,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   /// Load data from local storage. If empty, will return:
   ///
   /// ```dart
-  /// Left(Failure(
+  /// Left(Failure<Object>(
   ///    name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
   ///    details: <String, dynamic>{'storageName': storageName},
   /// ));
@@ -60,7 +60,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   /// block in your use case that checks err.cornerstone.EMPTY_LOCAL_STORAGE
   /// as failure name.
   @override
-  Future<Either<Failure, Snap>> load() async {
+  Future<Either<Failure<Object>, Snap>> load() async {
     try {
       final box = await hive.openBox(storageName);
 

@@ -4,27 +4,28 @@ import 'package:example/repositories/people_repository.dart';
 import 'package:mockito/mockito.dart';
 
 class MockSnapshotResult extends Mock
-    implements Either<Failure, PeopleSnapshot> {}
+    implements Either<Failure<Object>, PeopleSnapshot> {}
 
-class MockClearResult extends Mock implements Either<Failure, Unit> {}
+class MockClearResult extends Mock implements Either<Failure<Object>, Unit> {}
 
 class MockRepo extends Mock implements PeopleRepository {
   @override
-  Future<Either<Failure, PeopleSnapshot>> getPeople() async =>
+  Future<Either<Failure<Object>, PeopleSnapshot>> getPeople() async =>
       await super.noSuchMethod(
         Invocation.method(#getPeople, []),
         returnValue: MockSnapshotResult(),
       );
 
   @override
-  Future<Either<Failure, PeopleSnapshot>> load() async =>
+  Future<Either<Failure<Object>, PeopleSnapshot>> load() async =>
       await super.noSuchMethod(
         Invocation.method(#load, []),
         returnValue: MockSnapshotResult(),
       );
 
   @override
-  Future<Either<Failure, Unit>> clear() async => await super.noSuchMethod(
+  Future<Either<Failure<Object>, Unit>> clear() async =>
+      await super.noSuchMethod(
         Invocation.method(#clear, []),
         returnValue: MockClearResult(),
       );
