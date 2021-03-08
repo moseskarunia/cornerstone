@@ -27,10 +27,11 @@ class MockBox extends Mock implements Box {
       returnValue: <String, dynamic>{});
 }
 
-class MockConvertToFailure extends Mock implements ConvertToFailure {
+class MockConvertToFailure extends Mock implements ConvertToFailure<Object> {
   @override
-  Failure call(dynamic e) => super.noSuchMethod(Invocation.method(#call, [e]),
-      returnValue: Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e));
+  Failure<Object> call(dynamic e) =>
+      super.noSuchMethod(Invocation.method(#call, [e]),
+          returnValue: Failure<Object>(name: 'err.app.TEST_ERROR', details: e));
 }
 
 class MockConvertToSnapshot extends Mock
@@ -155,14 +156,14 @@ void main() {
           final e = Exception();
           when(dataSource.readMany()).thenThrow(e);
           when(convertToFailure(e)).thenReturn(
-            Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e),
+            Failure<Object>(name: 'err.app.TEST_ERROR', details: e),
           );
 
           final result = await repo.getPeople();
 
           expect(
             (result as Left).value,
-            Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e),
+            Failure<Object>(name: 'err.app.TEST_ERROR', details: e),
           );
 
           verify(dataSource.readMany()).called(1);
@@ -176,7 +177,7 @@ void main() {
     test('should return Left and converts CornerstoneException', () {
       expect(
         converter(const CornerstoneException(name: 'err.app.TEST_ERROR')),
-        const Failure<dynamic>(
+        const Failure<Object>(
           name: 'err.app.TEST_ERROR',
           details: const CornerstoneException(name: 'err.app.TEST_ERROR'),
         ),
@@ -186,7 +187,7 @@ void main() {
       final e = Exception();
       expect(
         converter(e),
-        Failure<dynamic>(name: 'err.app.UNEXPECTED_ERROR', details: e),
+        Failure<Object>(name: 'err.app.UNEXPECTED_ERROR', details: e),
       );
     });
   });

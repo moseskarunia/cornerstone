@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 mixin CornerstonePersistentRepositoryMixin<Snap>
     on LocallyPersistentRepository<Snap> {
   HiveInterface get hive;
-  ConvertToFailure<dynamic> get convertToFailure;
+  ConvertToFailure<Object> get convertToFailure;
   ConvertToSnapshot<Snap> get convertToSnapshot;
 
   /// Snapshot of this repo. Need to be named [snapshot] to make it accessible
@@ -65,7 +65,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
       final box = await hive.openBox(storageName);
 
       if (box.toMap().isEmpty) {
-        return Left(Failure(
+        return Left(Failure<Object>(
           name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
           details: <String, dynamic>{'storageName': storageName},
         ));

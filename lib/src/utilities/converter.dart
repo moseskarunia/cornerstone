@@ -15,7 +15,7 @@ import 'package:cornerstone/src/core/failure.dart';
 /// }
 ///
 /// class ConvertMyExceptionToFailure<dynamic>{
-///   Failure<dynamic> call(dynamic e) {
+///   Failure<dynamic> call(Object e) {
 ///     if(e is MyException) {
 ///       return Failure(name: e.name, details: e.details);
 ///     } else {
@@ -25,7 +25,7 @@ import 'package:cornerstone/src/core/failure.dart';
 /// }
 /// ```
 abstract class ConvertToFailure<Type> {
-  Failure<Type> call(dynamic e);
+  Failure<Type> call(Object e);
 }
 
 /// Convert to snapshot is a mockable function which used to generate

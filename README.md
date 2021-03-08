@@ -38,7 +38,7 @@ Sample platform interface:
 
 ```dart
 abstract class CleanHttpClient {
-  FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams = {}});
+  FutureOr<Object> get(String path, {Map<String,dynamic> queryParams = {}});
 }
 
 class DioCleanHttpClient extends CleanHttpClient {
@@ -46,7 +46,7 @@ class DioCleanHttpClient extends CleanHttpClient {
 
   const DioCleanHttpClient({required this.dio});
 
-  FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams = {}}) async {
+  FutureOr<Object> get(String path, {Map<String,dynamic> queryParams = {}}) async {
     // TODO: implement get for dio.
   }
 }

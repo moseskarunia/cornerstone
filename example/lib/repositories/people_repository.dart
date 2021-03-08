@@ -37,7 +37,7 @@ class PeopleRepositoryImpl extends PeopleRepository {
   final PeopleDataSource dataSource;
   final Clock clock;
   final HiveInterface hive;
-  final ConvertToFailure convertToFailure;
+  final ConvertToFailure<Object> convertToFailure;
   final ConvertToSnapshot<PeopleSnapshot> convertToSnapshot;
 
   @override
@@ -73,13 +73,13 @@ class PeopleRepositoryImpl extends PeopleRepository {
   }
 }
 
-class ConvertPeopleExceptionToFailure extends ConvertToFailure {
+class ConvertPeopleExceptionToFailure extends ConvertToFailure<Object> {
   @override
-  Failure call(dynamic e) {
+  Failure<Object> call(dynamic e) {
     if (e is CornerstoneException) {
-      return Failure(name: e.name, details: e);
+      return Failure<Object>(name: e.name, details: e);
     }
-    return Failure(name: 'err.app.UNEXPECTED_ERROR', details: e);
+    return Failure<Object>(name: 'err.app.UNEXPECTED_ERROR', details: e);
   }
 }
 

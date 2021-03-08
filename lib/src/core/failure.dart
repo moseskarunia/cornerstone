@@ -7,7 +7,7 @@ class Failure<T> extends Equatable {
   /// consistent as possible to make it easier to maintain.
   final String name;
 
-  /// You can put anything here
+  /// You can put anything here, usually it's the original exception object
   final T? details;
 
   const Failure({required this.name, this.details});

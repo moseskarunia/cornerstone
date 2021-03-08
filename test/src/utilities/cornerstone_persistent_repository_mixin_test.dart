@@ -24,10 +24,11 @@ class MockBox extends Mock implements Box {
       returnValue: <String, dynamic>{});
 }
 
-class MockConvertToFailure extends Mock implements ConvertToFailure {
+class MockConvertToFailure extends Mock implements ConvertToFailure<Object> {
   @override
-  Failure call(dynamic e) => super.noSuchMethod(Invocation.method(#call, [e]),
-      returnValue: Failure<dynamic>(name: 'err.app.TEST_ERROR', details: e));
+  Failure<Object> call(Object e) =>
+      super.noSuchMethod(Invocation.method(#call, [e]),
+          returnValue: Failure<Object>(name: 'err.app.TEST_ERROR', details: e));
 }
 
 class MockConvertToSnapshot extends Mock
@@ -64,7 +65,7 @@ abstract class FruitRepository
 
 class FruitRepositoryImpl extends FruitRepository {
   @override
-  final ConvertToFailure convertToFailure;
+  final ConvertToFailure<Object> convertToFailure;
   final ConvertToSnapshot<FruitSnapshot> convertToSnapshot;
   final HiveInterface hive;
 
@@ -117,16 +118,19 @@ void main() {
 
     group('save', () {
       test(
-        'should catch Exception '
-        'and return the result of convertToFailure',
+        'should catch Exception and return the result of convertToFailure',
         () async {
           final e = HiveError('TEST_ERROR');
           when(box.putAll(repo.asJson)).thenThrow(e);
-          when(convertToFailure(e)).thenReturn(Failure(name: 'TEST_ERROR'));
+          when(convertToFailure(e)).thenReturn(Failure<Object>(
+            name: 'TEST_ERROR',
+            details: e,
+          ));
 
           final result = await repo.save();
 
-          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
+          expect((result as Left).value,
+              Failure<Object>(name: 'TEST_ERROR', details: e));
 
           verifyInOrder([
             hive.openBox(repo.storageName),
@@ -149,16 +153,19 @@ void main() {
     });
 
     group('clear', () {
-      test(
-          'should catch Exception '
-          'and return the result of convertToFailure', () async {
+      test('should catch Exception and return the result of convertToFailure',
+          () async {
         final e = HiveError('TEST_ERROR');
         when(box.clear()).thenThrow(e);
-        when(convertToFailure(e)).thenReturn(Failure(name: 'TEST_ERROR'));
+        when(convertToFailure(e)).thenReturn(Failure<Object>(
+          name: 'TEST_ERROR',
+          details: e,
+        ));
 
         final result = await repo.clear();
 
-        expect((result as Left).value, Failure<dynamic>(name: 'TEST_ERROR'));
+        expect((result as Left).value,
+            Failure<Object>(name: 'TEST_ERROR', details: e));
         verifyInOrder([
           hive.openBox(repo.storageName),
           box.clear(),
@@ -184,11 +191,13 @@ void main() {
         () async {
           final e = HiveError('TEST_ERROR');
           when(box.toMap()).thenThrow(e);
-          when(convertToFailure(e)).thenReturn(Failure(name: 'TEST_ERROR'));
+          when(convertToFailure(e))
+              .thenReturn(Failure<Object>(name: 'TEST_ERROR', details: e));
 
           final result = await repo.load();
 
-          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
+          expect((result as Left).value,
+              Failure<Object>(name: 'TEST_ERROR', details: e));
 
           verifyInOrder([
             hive.openBox(repo.storageName),
@@ -207,7 +216,7 @@ void main() {
 
           expect(
             (result as Left).value,
-            Failure<dynamic>(
+            Failure<Object>(
               name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
               details: <String, dynamic>{'storageName': 'FruitRepositoryImpl'},
             ),
