@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.6] - 8 March 2021
+- Fix: `UseCase`'s call param now is correctly marked as `required`.
+
 ## [2.0.0-nullsafety.5] - 8 March 2021
 - New: `ConvertCornerstoneExceptionToFailure`, a common implementation of `ConvertToFailure`.
 
