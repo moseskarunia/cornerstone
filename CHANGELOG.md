@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.5] - 8 March 2021
+- New: `ConvertCornerstoneExceptionToFailure`, a common implementation of `ConvertToFailure`.
+
 ## [2.0.0-nullsafety.4] - 8 March 2021
 - Update: `ConvertToFailure`'s call is now accepts `Object` instead of dynamic. The return is also changed from `Failure<dynamic>` to `Failure<Object>`. This change have 2 goals: To further enforce null-safety and because logically, it makes no sense to call `ConvertToFailure` with null parameter.
 
