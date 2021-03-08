@@ -86,8 +86,7 @@ void initArchitecture() {
     () => PeopleRepositoryImpl(
       dataSource: GetIt.I(),
       hive: Hive,
-      convertToFailure: ConvertPeopleExceptionToFailure(),
-      convertToSnapshot: ConvertToPeopleSnapshot(),
+      convertToSnapshot: const ConvertToPeopleSnapshot(),
     ),
   );
   GetIt.I.registerLazySingleton(() => GetPeople(repo: GetIt.I()));

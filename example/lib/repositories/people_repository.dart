@@ -48,8 +48,8 @@ class PeopleRepositoryImpl extends PeopleRepository {
   PeopleRepositoryImpl({
     required this.dataSource,
     required this.hive,
-    required this.convertToFailure,
     required this.convertToSnapshot,
+    this.convertToFailure = const ConvertCornerstoneExceptionToFailure(),
     this.clock = const Clock(),
   }) : snapshot = PeopleSnapshot(timestamp: clock.now());
 
@@ -73,17 +73,8 @@ class PeopleRepositoryImpl extends PeopleRepository {
   }
 }
 
-class ConvertPeopleExceptionToFailure extends ConvertToFailure<Object> {
-  @override
-  Failure<Object> call(dynamic e) {
-    if (e is CornerstoneException) {
-      return Failure<Object>(name: e.name, details: e);
-    }
-    return Failure<Object>(name: 'err.app.UNEXPECTED_ERROR', details: e);
-  }
-}
-
-class ConvertToPeopleSnapshot extends ConvertToSnapshot<PeopleSnapshot> {
+class ConvertToPeopleSnapshot implements ConvertToSnapshot<PeopleSnapshot> {
+  const ConvertToPeopleSnapshot();
   @override
   PeopleSnapshot call(Map<String, dynamic> data) =>
       PeopleSnapshot.fromJson(data);

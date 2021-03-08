@@ -171,29 +171,8 @@ void main() {
       );
     });
   });
-
-  group('ConvertPeopleExceptionToFailure', () {
-    final converter = ConvertPeopleExceptionToFailure();
-    test('should return Left and converts CornerstoneException', () {
-      expect(
-        converter(const CornerstoneException(name: 'err.app.TEST_ERROR')),
-        const Failure<Object>(
-          name: 'err.app.TEST_ERROR',
-          details: const CornerstoneException(name: 'err.app.TEST_ERROR'),
-        ),
-      );
-    });
-    test('should return Left and returns err.app.UNEXPECTED_ERROR', () {
-      final e = Exception();
-      expect(
-        converter(e),
-        Failure<Object>(name: 'err.app.UNEXPECTED_ERROR', details: e),
-      );
-    });
-  });
-
   group('ConvertToPeopleSnapshot', () {
-    final converter = ConvertToPeopleSnapshot();
+    final converter = const ConvertToPeopleSnapshot();
     test('should convert from Map', () {
       expect(converter(snapJsonFixture), snapFixture);
     });
