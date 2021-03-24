@@ -19,7 +19,7 @@ jobs:
         working-directory: example
     runs-on: ubuntu-latest
     container:
-      image: google/dart:2.12.0
+      image: google/dart:2.12.1
 
     steps:
       - uses: actions/checkout@v2
