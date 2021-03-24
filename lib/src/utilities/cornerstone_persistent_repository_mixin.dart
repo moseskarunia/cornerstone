@@ -60,7 +60,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   /// block in your use case that checks err.cornerstone.EMPTY_LOCAL_STORAGE
   /// as failure name.
   @override
-  Future<Either<Failure<Object>, Snap>> load() async {
+  Future<Either<Failure<Object>, Snap>> load({Object? param = null}) async {
     try {
       final box = await hive.openBox(storageName);
 

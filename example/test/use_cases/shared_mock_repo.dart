@@ -17,7 +17,7 @@ class MockRepo extends Mock implements PeopleRepository {
       );
 
   @override
-  Future<Either<Failure<Object>, PeopleSnapshot>> load() async =>
+  Future<Either<Failure<Object>, PeopleSnapshot>> load({Object? param}) async =>
       await super.noSuchMethod(
         Invocation.method(#load, []),
         returnValue: MockSnapshotResult(),
