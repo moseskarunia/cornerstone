@@ -60,11 +60,7 @@ class PeopleRepositoryImpl extends PeopleRepository {
 
       snapshot = PeopleSnapshot(data: results, timestamp: clock.now());
 
-      final saveResult = await save();
-
-      if (saveResult.isLeft()) {
-        snapshot = PeopleSnapshot(data: snapshot.data, timestamp: clock.now());
-      }
+      await save();
 
       return Right(snapshot);
     } catch (e) {

@@ -3,10 +3,10 @@ import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/people_repository.dart';
 import 'package:example/use_cases/get_people.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import 'shared_mock_repo.dart';
+import '../shared_mocks.dart';
 
 void main() {
   final snapFixture = PeopleSnapshot(
@@ -29,17 +29,18 @@ void main() {
 
   group('GetPeople', () {
     tearDown(() {
-      verify(repo.getPeople()).called(1);
+      verify(() => repo.getPeople()).called(1);
     });
     test('should return the Right result of repo.getPeople', () async {
-      when(repo.getPeople()).thenAnswer((_) async => Right(snapFixture));
+      when(() => repo.getPeople()).thenAnswer((_) async => Right(snapFixture));
 
       final result = await getPeople();
 
       expect((result as Right).value, snapFixture);
     });
     test('should return the Left result of repo.getPeople', () async {
-      when(repo.getPeople()).thenAnswer((_) async => Left(failureFixture));
+      when(() => repo.getPeople())
+          .thenAnswer((_) async => Left(failureFixture));
 
       final result = await getPeople();
 

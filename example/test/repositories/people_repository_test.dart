@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:clock/clock.dart';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
@@ -7,49 +5,22 @@ import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/people_repository.dart';
 import 'package:hive/hive.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-import 'people_repository_test.mocks.dart';
+import '../shared_mocks.dart';
 
-class MockBox extends Mock implements Box {
-  @override
-  Future<void> putAll(Map entries) async =>
-      await super.noSuchMethod(Invocation.method(#putAll, [entries]));
+class MockBox extends Mock implements Box {}
 
-  @override
-  Future<int> clear() async =>
-      await super.noSuchMethod(Invocation.method(#clear, []), returnValue: 0);
-
-  @override
-  Map toMap() => super.noSuchMethod(Invocation.method(#toMap, []),
-      returnValue: <String, dynamic>{});
-}
-
-class MockConvertToFailure extends Mock implements ConvertToFailure<Object> {
-  @override
-  Failure<Object> call(dynamic e) =>
-      super.noSuchMethod(Invocation.method(#call, [e]),
-          returnValue: Failure<Object>(name: 'err.app.TEST_ERROR', details: e));
-}
+class MockConvertToFailure extends Mock implements ConvertToFailure<Object> {}
 
 class MockConvertToSnapshot extends Mock
-    implements ConvertToSnapshot<PeopleSnapshot> {
-  @override
-  PeopleSnapshot call(Map data) =>
-      super.noSuchMethod(Invocation.method(#call, [data]),
-          returnValue: PeopleSnapshot(timestamp: DateTime(2020, 10, 10)));
-}
+    implements ConvertToSnapshot<PeopleSnapshot> {}
 
-class MockDataSource extends Mock implements PeopleDataSource {
-  @override
-  FutureOr<List<Person>> readMany({Unit param = unit}) async =>
-      await super.noSuchMethod(Invocation.method(#readMany, [unit]),
-          returnValue: <Person>[]);
-}
+class MockDataSource extends Mock implements PeopleDataSource {}
 
-@GenerateMocks([HiveInterface])
+class MockHiveInterface extends Mock implements HiveInterface {}
+
 void main() {
   final jsonListFixture = [
     <String, dynamic>{
@@ -80,6 +51,10 @@ void main() {
   );
 
   final clockFixture = Clock.fixed(DateTime(2020, 10, 10));
+
+  setUpAll(() {
+    registerMocktailFallbacks();
+  });
   group('PeopleRepository', () {
     late MockBox box;
     late MockHiveInterface hive;
@@ -102,7 +77,8 @@ void main() {
         clock: clockFixture,
         dataSource: dataSource,
       );
-      when(hive.openBox(any)).thenAnswer((_) async => box);
+      when(() => hive.openBox(any())).thenAnswer((_) async => box);
+      when(() => box.putAll(any())).thenAnswer((_) => Future.value());
     });
 
     group('PeopleSnapshot', () {
@@ -129,33 +105,30 @@ void main() {
     });
 
     group('getPeople', () {
-      test(
-        'should return Right with PeopleSnapshot',
-        () async {
-          when(dataSource.readMany()).thenAnswer(
-            (_) async => peopleListFixture,
-          );
+      test('should return Right with PeopleSnapshot', () async {
+        when(() => dataSource.readMany()).thenAnswer(
+          (_) async => peopleListFixture,
+        );
 
-          final result = await repo.getPeople();
+        final result = await repo.getPeople();
 
-          expect(
-            (result as Right).value,
-            PeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
-          );
-          verifyInOrder([
-            dataSource.readMany(),
-            hive.openBox(repo.storageName),
-            box.putAll(snapJsonFixture),
-          ]);
-        },
-      );
+        expect(
+          (result as Right).value,
+          PeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
+        );
+        verifyInOrder([
+          () => dataSource.readMany(),
+          () => hive.openBox(repo.storageName),
+          () => box.putAll(snapJsonFixture),
+        ]);
+      });
 
       test(
         'should return Left with result of convertToFailure',
         () async {
           final e = Exception();
-          when(dataSource.readMany()).thenThrow(e);
-          when(convertToFailure(e)).thenReturn(
+          when(() => dataSource.readMany()).thenThrow(e);
+          when(() => convertToFailure(e)).thenReturn(
             Failure<Object>(name: 'err.app.TEST_ERROR', details: e),
           );
 
@@ -166,7 +139,7 @@ void main() {
             Failure<Object>(name: 'err.app.TEST_ERROR', details: e),
           );
 
-          verify(dataSource.readMany()).called(1);
+          verify(() => dataSource.readMany()).called(1);
         },
       );
     });

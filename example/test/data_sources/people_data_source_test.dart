@@ -2,13 +2,14 @@ import 'package:cornerstone/cornerstone.dart';
 import 'package:dio/dio.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+
 import 'package:test/test.dart';
 
-import 'people_data_source_test.mocks.dart';
+class MockDio extends Mock implements Dio {}
 
-@GenerateMocks([Dio, Response])
+class MockResponse extends Mock implements Response {}
+
 void main() {
   final jsonListFixture = [
     <String, dynamic>{
@@ -41,8 +42,8 @@ void main() {
     'and return a list of people',
     () async {
       final response = MockResponse();
-      when(response.data).thenReturn(jsonListFixture);
-      when(client.get('https://jsonplaceholder.typicode.com/users'))
+      when(() => response.data).thenReturn(jsonListFixture);
+      when(() => client.get('https://jsonplaceholder.typicode.com/users'))
           .thenAnswer((_) async => response);
 
       final results = await dataSource.readMany();
@@ -59,7 +60,7 @@ void main() {
         type: DioErrorType.response,
         error: <String, dynamic>{'status': 400},
       );
-      when(client.get('https://jsonplaceholder.typicode.com/users'))
+      when(() => client.get('https://jsonplaceholder.typicode.com/users'))
           .thenThrow(dioErrorFixture);
 
       await expectLater(
