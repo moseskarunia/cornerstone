@@ -10,6 +10,8 @@ class MockDio extends Mock implements Dio {}
 
 class MockResponse extends Mock implements Response {}
 
+class MockDioError extends Mock implements DioError {}
+
 void main() {
   final jsonListFixture = [
     <String, dynamic>{
@@ -56,10 +58,8 @@ void main() {
     'PeopleDataSource should encapsulate thrown exceptions '
     'with CornerstoneException',
     () async {
-      final dioErrorFixture = DioError(
-        type: DioErrorType.response,
-        error: <String, dynamic>{'status': 400},
-      );
+      final dioErrorFixture = MockDioError();
+      when(() => dioErrorFixture.type).thenReturn(DioErrorType.response);
       when(() => client.get('https://jsonplaceholder.typicode.com/users'))
           .thenThrow(dioErrorFixture);
 
