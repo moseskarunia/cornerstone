@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.8] - 24 March 2021
+- Update: `LocallyPersistentRepositoryMixin` `load` is now accept a nullable `Object` as param. This to make it possible for adding parameter when loading locally. (Need to be overridden manually)
+
 ## [2.0.0-nullsafety.7] - 8 March 2021
 - Update: Make `Failure` in `CornerstonePersistentRepositoryMixin` becomes `Failure<Object>`.
 

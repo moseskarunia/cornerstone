@@ -59,6 +59,9 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   /// If you need to return empty snapshot instead, you can make a conditional
   /// block in your use case that checks err.cornerstone.EMPTY_LOCAL_STORAGE
   /// as failure name.
+  ///
+  /// By default [param] won't be used. If you need to load with parameter,
+  /// override this in your repository.
   @override
   Future<Either<Failure<Object>, Snap>> load({Object? param = null}) async {
     try {
