@@ -19,15 +19,14 @@ void main() {
   test('age', () {
     final snap = DummySnapshot(
       fruits: ['Apple', 'Orange'],
-      clock: Clock.fixed(DateTime(2020, 10, 10, 9, 30, 30)),
-      timestamp: DateTime(2020, 10, 11, 10, 40, 10),
+      clock: Clock.fixed(DateTime(2020, 10, 11, 9, 30, 30)),
+      timestamp: DateTime(2020, 10, 10, 10, 40, 10),
     );
 
     expect(
       snap.age,
-      DateTime(2020, 10, 11, 10, 40, 10).difference(
-        DateTime(2020, 10, 10, 9, 30, 30),
-      ),
+      DateTime(2020, 10, 11, 9, 30, 30)
+          .difference(DateTime(2020, 10, 10, 10, 40, 10)),
     );
   });
 

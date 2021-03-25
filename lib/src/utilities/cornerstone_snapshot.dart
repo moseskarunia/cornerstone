@@ -27,8 +27,9 @@ abstract class CornerstoneSnapshot extends Equatable {
   @JsonKey(fromJson: dateTimeFromString, toJson: dateTimeToString)
   final DateTime timestamp;
 
-  /// Difference of current datetime compared to [timestamp].
-  Duration get age => timestamp.difference(clock.now());
+  /// Difference of current datetime compared to [timestamp]. The age will be
+  /// negative if [timestamp] is after current time.
+  Duration get age => clock.now().difference(timestamp);
 
   const CornerstoneSnapshot({
     required this.timestamp,
