@@ -13,8 +13,11 @@ class PeopleSnapshot extends CornerstoneSnapshot {
   @JsonKey(defaultValue: [])
   final List<Person> data;
 
-  PeopleSnapshot({this.data = const [], required DateTime timestamp})
-      : super(clock: const Clock(), timestamp: timestamp);
+  PeopleSnapshot({
+    required DateTime timestamp,
+    this.data = const [],
+    Clock clock = const Clock(),
+  }) : super(clock: clock, timestamp: timestamp);
 
   @override
   List<Object?> get props => [timestamp, data];
@@ -51,14 +54,18 @@ class PeopleRepositoryImpl extends PeopleRepository {
     required this.convertToSnapshot,
     this.convertToFailure = const ConvertCornerstoneExceptionToFailure(),
     this.clock = const Clock(),
-  }) : snapshot = PeopleSnapshot(timestamp: clock.now());
+  }) : snapshot = PeopleSnapshot(timestamp: clock.now(), clock: clock);
 
   @override
   Future<Either<Failure, PeopleSnapshot>> getPeople() async {
     try {
       final results = await dataSource.readMany();
 
-      snapshot = PeopleSnapshot(data: results, timestamp: clock.now());
+      snapshot = PeopleSnapshot(
+        data: results,
+        timestamp: clock.now(),
+        clock: clock,
+      );
 
       await save();
 
