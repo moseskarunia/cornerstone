@@ -1,3 +1,7 @@
+## [2.0.0-nullsafety.10] - 23 May 2021
+- Might be breaking: Failure now `Failure<T extends Objects?>` instead of `Failure<T>`.
+- Add: const constructor to use case.
+
 ## [2.0.0-nullsafety.9] - 25 March 2021
 - Fix: `CornerstoneSnapshot` age should always be positive if timestamp is same / before current time. 
 
