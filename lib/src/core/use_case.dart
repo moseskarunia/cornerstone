@@ -15,6 +15,5 @@ import 'package:dartz/dartz.dart';
 /// F = Usually simply a Failure or something extends from it. For flexibility,
 /// I won't enforce it.
 abstract class UseCase<F, Type, Param> {
-  const UseCase();
   FutureOr<Either<F, Type>> call({required Param param});
 }
