@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.11] - =3 Jun 2021
+- Update: Make various `Failure<Object>` declarations to `Failure<Object?>`
+
 ## [2.0.0-nullsafety.10] - 23 May 2021
 - Might be breaking: Failure now `Failure<T extends Objects?>` instead of `Failure<T>`.
 - Add: const constructor to use case.

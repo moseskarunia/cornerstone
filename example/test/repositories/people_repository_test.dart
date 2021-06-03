@@ -12,7 +12,7 @@ import '../shared_mocks.dart';
 
 class MockBox extends Mock implements Box {}
 
-class MockConvertToFailure extends Mock implements ConvertToFailure<Object> {}
+class MockConvertToFailure extends Mock implements ConvertToFailure<Object?> {}
 
 class MockConvertToSnapshot extends Mock
     implements ConvertToSnapshot<PeopleSnapshot> {}
@@ -129,14 +129,14 @@ void main() {
           final e = Exception();
           when(() => dataSource.readMany()).thenThrow(e);
           when(() => convertToFailure(e)).thenReturn(
-            Failure<Object>(name: 'err.app.TEST_ERROR', details: e),
+            Failure<Object?>(name: 'err.app.TEST_ERROR', details: e),
           );
 
           final result = await repo.getPeople();
 
           expect(
             (result as Left).value,
-            Failure<Object>(name: 'err.app.TEST_ERROR', details: e),
+            Failure<Object?>(name: 'err.app.TEST_ERROR', details: e),
           );
 
           verify(() => dataSource.readMany()).called(1);

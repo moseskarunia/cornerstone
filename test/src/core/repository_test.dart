@@ -6,17 +6,17 @@ class MyUniqueRepo with LocallyPersistentRepository<Map<String, dynamic>> {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
-  Future<Either<Failure<Object>, Unit>> clear() {
+  Future<Either<Failure<Object?>, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure<Object>, Map<String, dynamic>>> load({Object? param}) {
+  Future<Either<Failure<Object?>, Map<String, dynamic>>> load({Object? param}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure<Object>, Unit>> save() {
+  Future<Either<Failure<Object?>, Unit>> save() {
     throw UnimplementedError();
   }
 }
@@ -25,17 +25,17 @@ class MyNotSoUniqueRepo with LocallyPersistentRepository {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
-  Future<Either<Failure<Object>, Unit>> clear() {
+  Future<Either<Failure<Object?>, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure<Object>, Map<String, dynamic>>> load({Object? param}) {
+  Future<Either<Failure<Object?>, Map<String, dynamic>>> load({Object? param}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure<Object>, Unit>> save() {
+  Future<Either<Failure<Object?>, Unit>> save() {
     throw UnimplementedError();
   }
 
@@ -47,17 +47,17 @@ class NulledIdRepo with LocallyPersistentRepository<Map<String, dynamic>> {
   Map<String, dynamic> get asJson => <String, dynamic>{};
 
   @override
-  Future<Either<Failure<Object>, Unit>> clear() {
+  Future<Either<Failure<Object?>, Unit>> clear() {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure<Object>, Map<String, dynamic>>> load({Object? param}) {
+  Future<Either<Failure<Object?>, Map<String, dynamic>>> load({Object? param}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure<Object>, Unit>> save() {
+  Future<Either<Failure<Object?>, Unit>> save() {
     throw UnimplementedError();
   }
 }

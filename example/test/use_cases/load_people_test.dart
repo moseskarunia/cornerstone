@@ -17,7 +17,7 @@ void main() {
     timestamp: DateTime(2020, 10, 10),
   );
 
-  final failureFixture = Failure<Object>(name: 'TEST_ERROR', details: {});
+  final failureFixture = Failure<Object?>(name: 'TEST_ERROR', details: {});
 
   late MockRepo repo;
   late LoadPeople loadPeople;

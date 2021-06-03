@@ -8,7 +8,7 @@ void main() {
     () {
       final e = CornerstoneException(name: 'err.app.TEST_ERROR');
       final f = ConvertCornerstoneExceptionToFailure()(e);
-      expect(f, Failure<Object>(name: 'err.app.TEST_ERROR', details: e));
+      expect(f, Failure<Object?>(name: 'err.app.TEST_ERROR', details: e));
     },
   );
 
@@ -17,7 +17,7 @@ void main() {
     () {
       final e = Exception();
       final f = ConvertCornerstoneExceptionToFailure()(e);
-      expect(f, Failure<Object>(name: 'err.app.UNEXPECTED_ERROR', details: e));
+      expect(f, Failure<Object?>(name: 'err.app.UNEXPECTED_ERROR', details: e));
     },
   );
 }

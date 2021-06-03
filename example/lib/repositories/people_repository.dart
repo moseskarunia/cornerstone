@@ -40,7 +40,7 @@ class PeopleRepositoryImpl extends PeopleRepository {
   final PeopleDataSource dataSource;
   final Clock clock;
   final HiveInterface hive;
-  final ConvertToFailure<Object> convertToFailure;
+  final ConvertToFailure<Object?> convertToFailure;
   final ConvertToSnapshot<PeopleSnapshot> convertToSnapshot;
 
   @override

@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 mixin CornerstonePersistentRepositoryMixin<Snap>
     on LocallyPersistentRepository<Snap> {
   HiveInterface get hive;
-  ConvertToFailure<Object> get convertToFailure;
+  ConvertToFailure<Object?> get convertToFailure;
   ConvertToSnapshot<Snap> get convertToSnapshot;
 
   /// Snapshot of this repo. Need to be named [snapshot] to make it accessible
@@ -26,7 +26,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
 
   @override
   @visibleForOverriding
-  Future<Either<Failure<Object>, Unit>> save() async {
+  Future<Either<Failure<Object?>, Unit>> save() async {
     try {
       final box = await hive.openBox(storageName);
       await box.putAll(asJson);
@@ -37,7 +37,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   }
 
   @override
-  Future<Either<Failure<Object>, Unit>> clear() async {
+  Future<Either<Failure<Object?>, Unit>> clear() async {
     try {
       final box = await hive.openBox(storageName);
       await box.clear();
@@ -50,7 +50,7 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   /// Load data from local storage. If empty, will return:
   ///
   /// ```dart
-  /// Left(Failure<Object>(
+  /// Left(Failure<Object?>(
   ///    name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
   ///    details: <String, dynamic>{'storageName': storageName},
   /// ));
@@ -63,12 +63,12 @@ mixin CornerstonePersistentRepositoryMixin<Snap>
   /// By default [param] won't be used. If you need to load with parameter,
   /// override this in your repository.
   @override
-  Future<Either<Failure<Object>, Snap>> load({Object? param = null}) async {
+  Future<Either<Failure<Object?>, Snap>> load({Object? param = null}) async {
     try {
       final box = await hive.openBox(storageName);
 
       if (box.toMap().isEmpty) {
-        return Left(Failure<Object>(
+        return Left(Failure<Object?>(
           name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
           details: <String, dynamic>{'storageName': storageName},
         ));

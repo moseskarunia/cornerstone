@@ -15,11 +15,11 @@ import 'package:cornerstone/src/core/failure.dart';
 /// }
 ///
 /// class ConvertMyExceptionToFailure<Object>{
-///   Failure<Object> call(Object e) {
+///   Failure<Object?> call(Object e) {
 ///     if(e is MyException) {
-///       return Failure<Object>(name: e.name, details: e.details);
+///       return Failure<Object?>(name: e.name, details: e.details);
 ///     } else {
-///       return Failure<Object>(name: 'UNEXPECTED_ERROR', details: e);
+///       return Failure<Object?>(name: 'UNEXPECTED_ERROR', details: e);
 ///     }
 ///   }
 /// }
