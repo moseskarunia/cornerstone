@@ -4,40 +4,8 @@ import 'package:cornerstone/src/utilities/cornerstone_persistent_repository_mixi
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-
-import 'cornerstone_persistent_repository_mixin_test.mocks.dart';
-
-class MockBox extends Mock implements Box {
-  @override
-  Future<void> putAll(Map entries) async =>
-      await super.noSuchMethod(Invocation.method(#putAll, [entries]));
-
-  @override
-  Future<int> clear() async =>
-      await super.noSuchMethod(Invocation.method(#clear, []), returnValue: 0);
-
-  @override
-  Map toMap() => super.noSuchMethod(Invocation.method(#toMap, []),
-      returnValue: <String, dynamic>{});
-}
-
-class MockConvertToFailure extends Mock implements ConvertToFailure<Object?> {
-  @override
-  Failure<Object?> call(Object e) => super.noSuchMethod(
-      Invocation.method(#call, [e]),
-      returnValue: Failure<Object?>(name: 'err.app.TEST_ERROR', details: e));
-}
-
-class MockConvertToSnapshot extends Mock
-    implements ConvertToSnapshot<FruitSnapshot> {
-  @override
-  FruitSnapshot call(Map data) =>
-      super.noSuchMethod(Invocation.method(#call, [data]),
-          returnValue: FruitSnapshot(timestamp: DateTime(2020, 10, 10)));
-}
 
 class FruitSnapshot extends CornerstoneSnapshot {
   final List<String> data;
@@ -88,7 +56,15 @@ class FruitRepositoryImpl extends FruitRepository {
       };
 }
 
-@GenerateMocks([HiveInterface])
+class MockBox extends Mock implements Box {}
+
+class MockConvertToFailure extends Mock implements ConvertToFailure {}
+
+class MockHiveInterface extends Mock implements HiveInterface {}
+
+class MockConvertToSnapshot extends Mock
+    implements ConvertToSnapshot<FruitSnapshot> {}
+
 void main() {
   final dateFixture = DateTime.parse('2021-01-10T10:00:00Z').toLocal();
   late MockBox box;
@@ -108,8 +84,10 @@ void main() {
       convertToSnapshot: convertToSnapshot,
     );
 
-    when(hive.openBox(any)).thenAnswer((_) async => box);
-    when(box.clear()).thenAnswer((_) async => 0);
+    when(() => hive.openBox(any())).thenAnswer((_) async => box);
+    when(() => box.clear()).thenAnswer((_) async => 0);
+    when(() => convertToFailure(any()))
+        .thenReturn(Failure(name: 'err.app.TEST_ERROR'));
   });
   group('CornerstonePersistenceRepositoryMixin', () {
     test('storageName should be FruitRepositoryImpl', () {
@@ -121,8 +99,8 @@ void main() {
         'should catch Exception and return the result of convertToFailure',
         () async {
           final e = HiveError('TEST_ERROR');
-          when(box.putAll(repo.asJson)).thenThrow(e);
-          when(convertToFailure(e)).thenReturn(Failure<Object?>(
+          when(() => box.putAll(repo.asJson)).thenThrow(e);
+          when(() => convertToFailure(e)).thenReturn(Failure<Object?>(
             name: 'TEST_ERROR',
             details: e,
           ));
@@ -133,20 +111,21 @@ void main() {
               Failure<Object?>(name: 'TEST_ERROR', details: e));
 
           verifyInOrder([
-            hive.openBox(repo.storageName),
-            box.putAll(repo.asJson),
-            convertToFailure(e),
+            () => hive.openBox(repo.storageName),
+            () => box.putAll(repo.asJson),
+            () => convertToFailure(e),
           ]);
         },
       );
 
       test('should return unit when succeed', () async {
+        when(() => box.putAll(repo.asJson)).thenAnswer((_) => Future.value());
         final result = await repo.save();
         expect((result as Right).value, unit);
 
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.putAll(repo.asJson),
+          () => hive.openBox(repo.storageName),
+          () => box.putAll(repo.asJson),
         ]);
         verifyZeroInteractions(convertToFailure);
       });
@@ -156,8 +135,8 @@ void main() {
       test('should catch Exception and return the result of convertToFailure',
           () async {
         final e = HiveError('TEST_ERROR');
-        when(box.clear()).thenThrow(e);
-        when(convertToFailure(e)).thenReturn(Failure<Object?>(
+        when(() => box.clear()).thenThrow(e);
+        when(() => convertToFailure(e)).thenReturn(Failure<Object?>(
           name: 'TEST_ERROR',
           details: e,
         ));
@@ -167,9 +146,9 @@ void main() {
         expect((result as Left).value,
             Failure<Object?>(name: 'TEST_ERROR', details: e));
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.clear(),
-          convertToFailure(e),
+          () => hive.openBox(repo.storageName),
+          () => box.clear(),
+          () => convertToFailure(e),
         ]);
       });
 
@@ -177,9 +156,9 @@ void main() {
         final result = await repo.clear();
         expect((result as Right).value, unit);
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.clear(),
-          verifyZeroInteractions(convertToFailure),
+          () => hive.openBox(repo.storageName),
+          () => box.clear(),
+          () => verifyZeroInteractions(convertToFailure),
         ]);
       });
     });
@@ -190,8 +169,8 @@ void main() {
         'and return the result of convertToFailure',
         () async {
           final e = HiveError('TEST_ERROR');
-          when(box.toMap()).thenThrow(e);
-          when(convertToFailure(e))
+          when(() => box.toMap()).thenThrow(e);
+          when(() => convertToFailure(e))
               .thenReturn(Failure<Object?>(name: 'TEST_ERROR', details: e));
 
           final result = await repo.load();
@@ -200,9 +179,9 @@ void main() {
               Failure<Object?>(name: 'TEST_ERROR', details: e));
 
           verifyInOrder([
-            hive.openBox(repo.storageName),
-            box.toMap(),
-            convertToFailure(e),
+            () => hive.openBox(repo.storageName),
+            () => box.toMap(),
+            () => convertToFailure(e),
           ]);
         },
       );
@@ -210,7 +189,7 @@ void main() {
       test(
         'should return err.cornerstone.EMPTY_LOCAL_STORAGE',
         () async {
-          when(box.toMap()).thenReturn({});
+          when(() => box.toMap()).thenReturn({});
 
           final result = await repo.load();
 
@@ -223,8 +202,8 @@ void main() {
           );
 
           verifyInOrder([
-            hive.openBox(repo.storageName),
-            box.toMap(),
+            () => hive.openBox(repo.storageName),
+            () => box.toMap(),
           ]);
         },
       );
@@ -234,8 +213,8 @@ void main() {
           'data': ['Apple'],
           'timestamp': '2021-01-10T10:00:00Z'
         };
-        when(box.toMap()).thenReturn(mapFixture);
-        when(convertToSnapshot(mapFixture)).thenReturn(FruitSnapshot(
+        when(() => box.toMap()).thenReturn(mapFixture);
+        when(() => convertToSnapshot(mapFixture)).thenReturn(FruitSnapshot(
           data: ['Apple'],
           timestamp: dateFixture,
         ));
@@ -249,12 +228,12 @@ void main() {
           FruitSnapshot(data: ['Apple'], timestamp: dateFixture),
         );
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.toMap(),
-          convertToSnapshot(<String, dynamic>{
-            'data': ['Apple'],
-            'timestamp': '2021-01-10T10:00:00Z'
-          }),
+          () => hive.openBox(repo.storageName),
+          () => box.toMap(),
+          () => convertToSnapshot(<String, dynamic>{
+                'data': ['Apple'],
+                'timestamp': '2021-01-10T10:00:00Z'
+              }),
         ]);
       });
     });
