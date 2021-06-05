@@ -1,4 +1,7 @@
-## [2.0.0-nullsafety.11] - =3 Jun 2021
+## [2.0.0-nullsafety.12] - 5 Jun 2021
+- New: `SafeSingleGetterDataSource`, `SafeMultipleGetterDataSource`, `SafeCreatorDataSource`, `SafecUpdaterDataSource`, `SafeDeleterDataSource`.
+
+## [2.0.0-nullsafety.11] - 3 Jun 2021
 - Update: Make various `Failure<Object>` declarations to `Failure<Object?>`
 
 ## [2.0.0-nullsafety.10] - 23 May 2021

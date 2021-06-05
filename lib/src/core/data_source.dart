@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:cornerstone/cornerstone.dart';
+import 'package:dartz/dartz.dart';
+
 /// Implement this abstract in your data source if it can fetch some data.
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
@@ -30,6 +33,11 @@ abstract class SingleGetterDataSource<Type, Param> {
   FutureOr<Type> readOne({required Param param});
 }
 
+/// Similar to [SingleGetterDataSource], only returns Either form right away.
+abstract class SafeSingleGetterDataSource<Type, Param> {
+  FutureOr<Either<Failure, Type>> readOne({required Param param});
+}
+
 /// Implement this abstract in your data source if it can fetch some data.
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
@@ -58,6 +66,11 @@ abstract class MultipleGetterDataSource<Type, Param> {
   FutureOr<List<Type>> readMany({required Param param});
 }
 
+/// Similar to [MultipleGetterDataSource], only returns Either form right away.
+abstract class SafeMultipleGetterDataSource<Type, Param> {
+  FutureOr<Either<Failure, List<Type>>> readMany({required Param param});
+}
+
 /// Implement this abstract in your data source if it can perform data creation.
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
@@ -84,6 +97,11 @@ abstract class CreatorDataSource<Type, Param> {
   FutureOr<Type> create({required Param param});
 }
 
+/// Similar to [CreatorDataSource], only returns Either form right away.
+abstract class SafeCreatorDataSource<Type, Param> {
+  FutureOr<Either<Failure, Type>> create({required Param param});
+}
+
 /// Implement this abstract in your data source if it can perform data update
 /// Note that 1 class can **implements** from multiple abstracts.
 ///
@@ -105,6 +123,11 @@ abstract class CreatorDataSource<Type, Param> {
 /// `Map<String,dynamic>` as Param.
 abstract class UpdaterDataSource<Type, Param> {
   FutureOr<Type> update({required Param param});
+}
+
+/// Similar to [UpdaterDataSource], only returns Either form right away.
+abstract class SafecUpdaterDataSource<Type, Param> {
+  FutureOr<Either<Failure, Type>> update({required Param param});
 }
 
 /// Implement this abstract in your data source if it can perform data deletion.
@@ -129,4 +152,9 @@ abstract class UpdaterDataSource<Type, Param> {
 /// P.S. Signing out means deleting session. Therefore, deleter data source.
 abstract class DeleterDataSource<Type, Param> {
   FutureOr<Type> delete({required Param param});
+}
+
+/// Similar to [DeleterDataSource], only returns Either form right away.
+abstract class SafeDeleterDataSource<Type, Param> {
+  FutureOr<Either<Failure, Type>> delete({required Param param});
 }
