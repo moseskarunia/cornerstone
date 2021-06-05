@@ -3,15 +3,14 @@ import 'dart:async';
 import 'package:cornerstone/cornerstone.dart';
 import 'package:dartz/dartz.dart';
 import 'package:example/repositories/people_repository.dart';
-import 'package:meta/meta.dart';
 
 /// Load PeopleSnapshot locally and returns it.
-class LoadPeople extends UseCase<Failure, PeopleSnapshot, Null> {
+class LoadPeople extends UseCase<Failure, PeopleSnapshot, Unit> {
   final PeopleRepository repo;
 
-  LoadPeople({@required this.repo});
+  LoadPeople({required this.repo});
   @override
-  FutureOr<Either<Failure, PeopleSnapshot>> call({Null param}) async {
+  FutureOr<Either<Failure, PeopleSnapshot>> call({Unit param = unit}) async {
     return await repo.load();
   }
 }

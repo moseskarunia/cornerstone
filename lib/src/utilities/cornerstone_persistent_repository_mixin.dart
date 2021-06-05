@@ -12,43 +12,67 @@ import 'package:meta/meta.dart';
 /// If you use this form a Flutter project, you should also install
 /// [hive_flutter](https://pub.dev/packages/hive_flutter) package and use
 /// `Hive.initFlutter()` instead of `Hive.init()`
-mixin CornerstonePersistentRepositoryMixin<Snap>
+mixin CornerstonePersistentRepositoryMixin<Snap extends Object>
     on LocallyPersistentRepository<Snap> {
   HiveInterface get hive;
-  ConvertToFailure get convertToFailure;
-  ConvertToSnapshot<Map<String, dynamic>, Snap> get convertToSnapshot;
+  ConvertToFailure<Object?> get convertToFailure;
+  ConvertToSnapshot<Snap> get convertToSnapshot;
 
-  Snap snapshot;
+  /// Snapshot of this repo. Need to be named [snapshot] to make it accessible
+  /// accessible from mixin. This is late-typed, so it MUST have a default value
+  /// at the start of this class initialization to make it always non-nullable
+  /// afterward.
+  late Snap snapshot;
 
   @override
   @visibleForOverriding
-  Future<Either<Failure, Unit>> save() async {
+  Future<Either<Failure<Object?>, Unit>> save() async {
     try {
       final box = await hive.openBox(storageName);
       await box.putAll(asJson);
       return Right(unit);
     } catch (e) {
       return Left(convertToFailure(e));
-      // return Left(Failure(name: 'UNEXPECTED_ERROR', details: e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, Unit>> clear() async {
+  Future<Either<Failure<Object?>, Unit>> clear() async {
     try {
       final box = await hive.openBox(storageName);
       await box.clear();
       return Right(unit);
     } catch (e) {
       return Left(convertToFailure(e));
-      // return Left(Failure(name: 'UNEXPECTED_ERROR', details: e.toString()));
     }
   }
 
+  /// Load data from local storage. If empty, will return:
+  ///
+  /// ```dart
+  /// Left(Failure<Object?>(
+  ///    name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
+  ///    details: <String, dynamic>{'storageName': storageName},
+  /// ));
+  /// ```
+  ///
+  /// If you need to return empty snapshot instead, you can make a conditional
+  /// block in your use case that checks err.cornerstone.EMPTY_LOCAL_STORAGE
+  /// as failure name.
+  ///
+  /// By default [param] won't be used. If you need to load with parameter,
+  /// override this in your repository.
   @override
-  Future<Either<Failure, Snap>> load() async {
+  Future<Either<Failure<Object?>, Snap>> load({Object? param = null}) async {
     try {
       final box = await hive.openBox(storageName);
+
+      if (box.toMap().isEmpty) {
+        return Left(Failure<Object?>(
+          name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
+          details: <String, dynamic>{'storageName': storageName},
+        ));
+      }
 
       /// For some reason, this is the only safe way I can get box data as
       /// `Map<String, dynamic>` (Using cast throws an error).

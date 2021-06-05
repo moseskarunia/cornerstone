@@ -1,12 +1,16 @@
+import 'package:cornerstone/cornerstone.dart';
 import 'package:dio/dio.dart';
 import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+
 import 'package:test/test.dart';
 
-class MockClient extends Mock implements Dio {}
+class MockDio extends Mock implements Dio {}
 
 class MockResponse extends Mock implements Response {}
+
+class MockDioError extends Mock implements DioError {}
 
 void main() {
   final jsonListFixture = [
@@ -26,11 +30,12 @@ void main() {
     Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
     Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
   ];
-  MockClient client;
-  PeopleDataSource dataSource;
+
+  late MockDio client;
+  late PeopleDataSource dataSource;
 
   setUp(() {
-    client = MockClient();
+    client = MockDio();
     dataSource = PeopleDataSourceImpl(client: client);
   });
 
@@ -39,14 +44,32 @@ void main() {
     'and return a list of people',
     () async {
       final response = MockResponse();
-      when(response.data).thenReturn(jsonListFixture);
-      when(client.get(any)).thenAnswer((_) async => response);
+      when(() => response.data).thenReturn(jsonListFixture);
+      when(() => client.get('https://jsonplaceholder.typicode.com/users'))
+          .thenAnswer((_) async => response);
 
       final results = await dataSource.readMany();
 
       expect(results, peopleListFixture);
+    },
+  );
 
-      verify(client.get('https://jsonplaceholder.typicode.com/users'));
+  test(
+    'PeopleDataSource should encapsulate thrown exceptions '
+    'with CornerstoneException',
+    () async {
+      final dioErrorFixture = MockDioError();
+      when(() => dioErrorFixture.type).thenReturn(DioErrorType.response);
+      when(() => client.get('https://jsonplaceholder.typicode.com/users'))
+          .thenThrow(dioErrorFixture);
+
+      await expectLater(
+        () async => await dataSource.readMany(),
+        throwsA(CornerstoneException<dynamic>(
+          name: 'err.app.UNEXPECTED_ERROR',
+          details: dioErrorFixture,
+        )),
+      );
     },
   );
 }
