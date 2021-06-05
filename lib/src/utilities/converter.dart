@@ -24,8 +24,18 @@ import 'package:cornerstone/src/core/failure.dart';
 ///   }
 /// }
 /// ```
+///
+/// To get stackTrace data, add stackTrace in your catch block
+///
+/// ```dart
+/// try {
+///   // Your code
+/// } catch (e, stackTrace) {
+///   return ConvertToFailure(e, stackTrace);
+/// }
+/// ```
 abstract class ConvertToFailure<T extends Object?> {
-  Failure<T> call(Object e);
+  Failure<T> call(Object e, [StackTrace? stackTrace]);
 }
 
 /// Convert to snapshot is a mockable function which used to generate

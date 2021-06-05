@@ -11,7 +11,7 @@ class ConvertCornerstoneExceptionToFailure
     implements ConvertToFailure<Object?> {
   const ConvertCornerstoneExceptionToFailure();
   @override
-  Failure<Object?> call(Object e) => Failure<Object?>(
+  Failure<Object?> call(Object e, [StackTrace? stackTrace]) => Failure<Object?>(
         name: e is CornerstoneException ? e.name : 'err.app.UNEXPECTED_ERROR',
         details: e,
       );

@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.13] - 5 Jun 2021
+- New: `ConvertToFailure` now accepts stackTrace as optional positional parameter.
+
 ## [2.0.0-nullsafety.12] - 5 Jun 2021
 - New: `SafeSingleGetterDataSource`, `SafeMultipleGetterDataSource`, `SafeCreatorDataSource`, `SafecUpdaterDataSource`, `SafeDeleterDataSource`.
 
