@@ -1,3 +1,47 @@
+## [2.0.0-nullsafety.14] - 5 Aug 2021
+- Fix: Typo, should be `SafeUpdaterDataSource` instead of `SafecUpdaterDataSource`
+
+## [2.0.0-nullsafety.13] - 5 Jun 2021
+- New: `ConvertToFailure` now accepts stackTrace as optional positional parameter.
+
+## [2.0.0-nullsafety.12] - 5 Jun 2021
+- New: `SafeSingleGetterDataSource`, `SafeMultipleGetterDataSource`, `SafeCreatorDataSource`, `SafecUpdaterDataSource`, `SafeDeleterDataSource`.
+
+## [2.0.0-nullsafety.11] - 3 Jun 2021
+- Update: Make various `Failure<Object>` declarations to `Failure<Object?>`
+
+## [2.0.0-nullsafety.10] - 23 May 2021
+- Might be breaking: Failure now `Failure<T extends Objects?>` instead of `Failure<T>`.
+- Add: const constructor to use case.
+
+## [2.0.0-nullsafety.9] - 25 March 2021
+- Fix: `CornerstoneSnapshot` age should always be positive if timestamp is same / before current time. 
+
+## [2.0.0-nullsafety.8] - 24 March 2021
+- Update: `LocallyPersistentRepositoryMixin` `load` is now accept a nullable `Object` as param. This to make it possible for adding parameter when loading locally. (Need to be overridden manually)
+
+## [2.0.0-nullsafety.7] - 8 March 2021
+- Update: Make `Failure` in `CornerstonePersistentRepositoryMixin` becomes `Failure<Object>`.
+
+## [2.0.0-nullsafety.6] - 8 March 2021
+- Fix: `UseCase`'s call param now is correctly marked as `required`.
+
+## [2.0.0-nullsafety.5] - 8 March 2021
+- New: `ConvertCornerstoneExceptionToFailure`, a common implementation of `ConvertToFailure`.
+
+## [2.0.0-nullsafety.4] - 8 March 2021
+- Update: `ConvertToFailure`'s call is now accepts `Object` instead of dynamic. The return is also changed from `Failure<dynamic>` to `Failure<Object>`. This change have 2 goals: To further enforce null-safety and because logically, it makes no sense to call `ConvertToFailure` with null parameter.
+
+## [2.0.0-nullsafety.3] - 6 March 2021
+- Update: Abstract classes' parameters are now required. A named param marked with `required` can still have its implementation accept default value instead of required. On the other hand, a non required param cannot be implemented with required. Therefore, for flexibility, all abstract classes' named parameters are now required. See example's people_data_source for more info.
+
+## [2.0.0-nullsafety.2] - 5 March 2021
+- Update: Bump hive dependency to 2.0.0.
+
+## [2.0.0-nullsafety.1] - 4 March 2021
+- New: Null-safety! To use, update your dart version to >=2.12.0, or use flutter 2.0.0
+- Update: [CornerstonePersistentRepositoryMixin] If load is called on empty storage, will return a nicer Failure.
+
 ## [1.1.1] - 24 February 2021
 - Fix: Properly export `CornerstoneException`.
 

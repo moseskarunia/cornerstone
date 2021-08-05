@@ -32,7 +32,7 @@ abstract class LocallyPersistentRepository<T> {
   /// ```dart
   /// Right(unit);
   /// ```
-  Future<Either<Failure, Unit>> save();
+  Future<Either<Failure<Object?>, Unit>> save();
 
   /// Read from local storage, assign it to repo, and return the data.
   /// You can use this function to get data from local storage without
@@ -47,7 +47,7 @@ abstract class LocallyPersistentRepository<T> {
   /// ```dart
   /// Right(unit);
   /// ```
-  Future<Either<Failure, T>> load();
+  Future<Either<Failure<Object?>, T>> load({Object? param = null});
 
   /// Clear the local storage.
   ///
@@ -57,7 +57,7 @@ abstract class LocallyPersistentRepository<T> {
   /// ```dart
   /// Right(unit);
   /// ```
-  Future<Either<Failure, Unit>> clear();
+  Future<Either<Failure<Object?>, Unit>> clear();
 
   /// The default storageName of your repository. Think of it like a table or
   /// collection name. Will use the string of your implementation's
@@ -65,7 +65,7 @@ abstract class LocallyPersistentRepository<T> {
   ///
   /// If you need to modify this, override [id] instead.
   @nonVirtual
-  String get storageName => '${this.runtimeType.toString()}${id ?? ''}';
+  String get storageName => '${this.runtimeType.toString()}$id';
 
   /// If somehow you need more than one repositories with a same type,
   /// you can override [id] to distinguish those.

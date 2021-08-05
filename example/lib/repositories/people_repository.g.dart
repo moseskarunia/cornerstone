@@ -7,26 +7,17 @@ part of 'people_repository.dart';
 // **************************************************************************
 
 PeopleSnapshot _$PeopleSnapshotFromJson(Map json) {
-  return $checkedNew('PeopleSnapshot', json, () {
-    final val = PeopleSnapshot(
-      updatedAt: $checkedConvert(
-          json, 'updatedAt', (v) => _$dateTimeFromJson(v as String)),
-      data: $checkedConvert(
-              json,
-              'data',
-              (v) => (v as List)
-                  ?.map((e) => e == null ? null : Person.fromJson(e as Map))
-                  ?.toList()) ??
-          [],
-      isSaved: $checkedConvert(json, 'isSaved', (v) => v as bool) ?? false,
-    );
-    return val;
-  });
+  return PeopleSnapshot(
+    data: (json['data'] as List<dynamic>?)
+            ?.map((e) => Person.fromJson(e as Map))
+            .toList() ??
+        [],
+    timestamp: dateTimeFromString(json['timestamp'] as String),
+  );
 }
 
 Map<String, dynamic> _$PeopleSnapshotToJson(PeopleSnapshot instance) =>
     <String, dynamic>{
-      'updatedAt': _$dateTimeToJson(instance.updatedAt),
-      'data': instance.data?.map((e) => e?.toJson())?.toList(),
-      'isSaved': instance.isSaved,
+      'timestamp': dateTimeToString(instance.timestamp),
+      'data': instance.data.map((e) => e.toJson()).toList(),
     };

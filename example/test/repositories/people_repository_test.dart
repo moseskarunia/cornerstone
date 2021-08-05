@@ -5,14 +5,21 @@ import 'package:example/data_sources/people_data_source.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/people_repository.dart';
 import 'package:hive/hive.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
+
+import '../shared_mocks.dart';
+
+class MockBox extends Mock implements Box {}
+
+class MockConvertToFailure extends Mock implements ConvertToFailure<Object?> {}
+
+class MockConvertToSnapshot extends Mock
+    implements ConvertToSnapshot<PeopleSnapshot> {}
 
 class MockDataSource extends Mock implements PeopleDataSource {}
 
-class MockHive extends Mock implements HiveInterface {}
-
-class MockBox extends Mock implements Box {}
+class MockHiveInterface extends Mock implements HiveInterface {}
 
 void main() {
   final jsonListFixture = [
@@ -34,176 +41,113 @@ void main() {
   final dateFixture = DateTime(2020, 10, 10);
 
   final snapJsonFixture = {
-    'updatedAt': dateFixture.toUtc().toIso8601String(),
+    'timestamp': dateFixture.toUtc().toIso8601String(),
     'data': jsonListFixture,
-    'isSaved': false,
   };
 
   final snapFixture = PeopleSnapshot(
     data: peopleListFixture,
-    updatedAt: dateFixture,
+    timestamp: dateFixture,
   );
 
-  MockBox box;
-  MockHive hive;
-  MockDataSource dataSource;
-  PeopleRepositoryImpl repo;
+  final clockFixture = Clock.fixed(DateTime(2020, 10, 10));
 
-  setUp(() {
-    box = MockBox();
-    hive = MockHive();
-    dataSource = MockDataSource();
-    repo = PeopleRepositoryImpl(
-      dataSource: dataSource,
-      hive: hive,
-      clock: Clock.fixed(DateTime(2020, 10, 10)),
-    );
-    when(hive.openBox(any)).thenAnswer((_) async => box);
+  setUpAll(() {
+    registerMocktailFallbacks();
   });
+  group('PeopleRepository', () {
+    late MockBox box;
+    late MockHiveInterface hive;
+    late MockConvertToFailure convertToFailure;
+    late MockConvertToSnapshot convertToSnapshot;
+    late PeopleRepositoryImpl repo;
+    late PeopleDataSource dataSource;
 
-  group('PeopleSnapshot', () {
-    test('props', () {
-      expect(snapFixture.props, [dateFixture, false, peopleListFixture]);
+    setUp(() {
+      box = MockBox();
+      hive = MockHiveInterface();
+      convertToFailure = MockConvertToFailure();
+      convertToSnapshot = MockConvertToSnapshot();
+      dataSource = MockDataSource();
+
+      repo = PeopleRepositoryImpl(
+        hive: hive,
+        convertToFailure: convertToFailure,
+        convertToSnapshot: convertToSnapshot,
+        clock: clockFixture,
+        dataSource: dataSource,
+      );
+      when(() => hive.openBox(any())).thenAnswer((_) async => box);
+      when(() => box.putAll(any())).thenAnswer((_) => Future.value());
     });
-    test('fromJson', () {
-      expect(PeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
+
+    group('PeopleSnapshot', () {
+      test('props', () {
+        expect(snapFixture.props, [dateFixture, peopleListFixture]);
+      });
+      test('fromJson', () {
+        expect(PeopleSnapshot.fromJson(snapJsonFixture), snapFixture);
+      });
+      test('toJson', () {
+        expect(snapFixture.toJson(), snapJsonFixture);
+      });
     });
-    test('toJson', () {
-      expect(snapFixture.toJson(), snapJsonFixture);
-    });
-  });
-  group('PeopleRepositoryImpl', () {
-    test('storageName should be PeopleRepositoryImpl', () {
+
+    test('storageName', () {
       expect(repo.storageName, 'PeopleRepositoryImpl');
     });
     test('asJson', () {
-      repo.data = snapFixture;
+      repo.snapshot = snapFixture;
       expect(repo.asJson, snapJsonFixture);
     });
+    test('initial snapshot', () {
+      expect(repo.snapshot, PeopleSnapshot(timestamp: clockFixture.now()));
+    });
+
     group('getPeople', () {
-      test(
-        'should return Right with PeopleSnapshot and isSaved',
-        () async {
-          when(dataSource.readMany(param: anyNamed('param'))).thenAnswer(
-            (_) async => peopleListFixture,
-          );
+      test('should return Right with PeopleSnapshot', () async {
+        when(() => dataSource.readMany()).thenAnswer(
+          (_) async => peopleListFixture,
+        );
 
-          final result = await repo.getPeople();
+        final result = await repo.getPeople();
 
-          expect(
-            (result as Right).value,
-            PeopleSnapshot(
-              data: peopleListFixture,
-              updatedAt: dateFixture,
-              isSaved: true,
-            ),
-          );
-          verifyInOrder([
-            dataSource.readMany(),
-            hive.openBox(repo.storageName),
-            box.putAll(<String, dynamic>{...snapJsonFixture, 'isSaved': true}),
-          ]);
-        },
-      );
+        expect(
+          (result as Right).value,
+          PeopleSnapshot(data: peopleListFixture, timestamp: dateFixture),
+        );
+        verifyInOrder([
+          () => dataSource.readMany(),
+          () => hive.openBox(repo.storageName),
+          () => box.putAll(snapJsonFixture),
+        ]);
+      });
 
       test(
-        'should return Right with PeopleSnapshot and !isSaved',
+        'should return Left with result of convertToFailure',
         () async {
-          when(dataSource.readMany(param: anyNamed('param'))).thenAnswer(
-            (_) async => peopleListFixture,
+          final e = Exception();
+          when(() => dataSource.readMany()).thenThrow(e);
+          when(() => convertToFailure(e)).thenReturn(
+            Failure<Object?>(name: 'err.app.TEST_ERROR', details: e),
           );
-          when(box.putAll(any)).thenThrow(HiveError('TEST_ERROR'));
-
-          final result = await repo.getPeople();
-
-          expect(
-            (result as Right).value,
-            PeopleSnapshot(
-              data: peopleListFixture,
-              updatedAt: dateFixture,
-              isSaved: false,
-            ),
-          );
-          verifyInOrder([
-            dataSource.readMany(),
-            hive.openBox(repo.storageName),
-            box.putAll(<String, dynamic>{...snapJsonFixture, 'isSaved': true}),
-          ]);
-        },
-      );
-
-      test(
-        'should return Left with Failure '
-        'when data source throws an exception',
-        () async {
-          when(dataSource.readMany(param: anyNamed('param')))
-              .thenThrow(Exception());
 
           final result = await repo.getPeople();
 
           expect(
             (result as Left).value,
-            Failure<dynamic>(
-              name: 'FAILED_TO_RETRIEVE_DATA',
-              details: Exception().toString(),
-            ),
+            Failure<Object?>(name: 'err.app.TEST_ERROR', details: e),
           );
 
-          verify(dataSource.readMany()).called(1);
+          verify(() => dataSource.readMany()).called(1);
         },
       );
     });
-
-    group('load', () {
-      tearDown(() {
-        verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.toMap(),
-        ]);
-      });
-      group('should catch', () {
-        test('HiveError and converts it into Failure', () async {
-          when(box.toMap()).thenThrow(HiveError('TEST_ERROR'));
-
-          final result = await repo.load();
-
-          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
-        });
-        test('other Exception and converts it into Failure', () async {
-          when(box.toMap()).thenThrow(Exception());
-
-          final result = await repo.load();
-
-          expect(
-            (result as Left).value,
-            Failure<dynamic>(
-              name: 'UNEXPECTED_ERROR',
-              details: Exception().toString(),
-            ),
-          );
-        });
-      });
-
-      test('should set loaded data to repo and return the data', () async {
-        when(box.toMap()).thenReturn({...snapJsonFixture, 'isSaved': true});
-        final result = await repo.load();
-        expect(
-          repo.data,
-          PeopleSnapshot(
-            data: peopleListFixture,
-            updatedAt: dateFixture,
-            isSaved: true,
-          ),
-        );
-        expect(
-          (result as Right).value,
-          PeopleSnapshot(
-            data: peopleListFixture,
-            updatedAt: dateFixture,
-            isSaved: true,
-          ),
-        );
-      });
+  });
+  group('ConvertToPeopleSnapshot', () {
+    final converter = const ConvertToPeopleSnapshot();
+    test('should convert from Map', () {
+      expect(converter(snapJsonFixture), snapFixture);
     });
   });
 }

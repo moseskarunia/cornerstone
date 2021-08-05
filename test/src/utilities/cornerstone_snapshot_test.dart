@@ -5,41 +5,28 @@ import 'package:test/test.dart';
 class DummySnapshot extends CornerstoneSnapshot {
   final List<String> fruits;
 
-  DummySnapshot({this.fruits = const [], Clock clock, DateTime timestamp})
-      : super(timestamp: timestamp, clock: clock);
+  DummySnapshot({
+    this.fruits = const [],
+    Clock clock = const Clock(),
+    required DateTime timestamp,
+  }) : super(timestamp: timestamp, clock: clock);
 
   @override
-  List<Object> get props => [timestamp, fruits];
+  List<Object?> get props => [timestamp, fruits];
 }
 
 void main() {
-  test('should throw AssertionError if clock null', () {
-    expectLater(
-      () => DummySnapshot(
-        fruits: ['Apple', 'Orange'],
-        timestamp: DateTime(2020, 10, 10),
-      ),
-      throwsA(isA<AssertionError>()),
-    );
-  });
-  test('should throw AssertionError if timestamp null', () {
-    expectLater(
-      () => DummySnapshot(fruits: ['Apple', 'Orange'], clock: Clock()),
-      throwsA(isA<AssertionError>()),
-    );
-  });
   test('age', () {
     final snap = DummySnapshot(
       fruits: ['Apple', 'Orange'],
-      clock: Clock.fixed(DateTime(2020, 10, 10, 9, 30, 30)),
-      timestamp: DateTime(2020, 10, 11, 10, 40, 10),
+      clock: Clock.fixed(DateTime(2020, 10, 11, 9, 30, 30)),
+      timestamp: DateTime(2020, 10, 10, 10, 40, 10),
     );
 
     expect(
       snap.age,
-      DateTime(2020, 10, 11, 10, 40, 10).difference(
-        DateTime(2020, 10, 10, 9, 30, 30),
-      ),
+      DateTime(2020, 10, 11, 9, 30, 30)
+          .difference(DateTime(2020, 10, 10, 10, 40, 10)),
     );
   });
 

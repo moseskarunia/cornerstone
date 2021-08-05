@@ -3,10 +3,10 @@ import 'package:dartz/dartz.dart';
 import 'package:example/entities/person.dart';
 import 'package:example/repositories/people_repository.dart';
 import 'package:example/use_cases/get_people.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockRepo extends Mock implements PeopleRepository {}
+import '../shared_mocks.dart';
 
 void main() {
   final snapFixture = PeopleSnapshot(
@@ -14,14 +14,13 @@ void main() {
       Person(id: 123, name: 'John Doe', email: 'johndoe@test.com'),
       Person(id: 456, name: 'Tony Stark', email: 'tony@starkindustries.com'),
     ],
-    updatedAt: DateTime(2020, 10, 10),
-    isSaved: true,
+    timestamp: DateTime(2020, 10, 10),
   );
 
-  final failureFixture = Failure(name: 'TEST_ERROR');
+  final failureFixture = Failure<Object?>(name: 'TEST_ERROR', details: {});
 
-  MockRepo repo;
-  GetPeople getPeople;
+  late MockRepo repo;
+  late GetPeople getPeople;
 
   setUp(() {
     repo = MockRepo();
@@ -30,17 +29,18 @@ void main() {
 
   group('GetPeople', () {
     tearDown(() {
-      verify(repo.getPeople()).called(1);
+      verify(() => repo.getPeople()).called(1);
     });
     test('should return the Right result of repo.getPeople', () async {
-      when(repo.getPeople()).thenAnswer((_) async => Right(snapFixture));
+      when(() => repo.getPeople()).thenAnswer((_) async => Right(snapFixture));
 
       final result = await getPeople();
 
       expect((result as Right).value, snapFixture);
     });
     test('should return the Left result of repo.getPeople', () async {
-      when(repo.getPeople()).thenAnswer((_) async => Left(failureFixture));
+      when(() => repo.getPeople())
+          .thenAnswer((_) async => Left(failureFixture));
 
       final result = await getPeople();
 

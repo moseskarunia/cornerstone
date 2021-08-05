@@ -38,15 +38,15 @@ Sample platform interface:
 
 ```dart
 abstract class CleanHttpClient {
-  FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams});
+  FutureOr<Object> get(String path, {Map<String,dynamic> queryParams = {}});
 }
 
 class DioCleanHttpClient extends CleanHttpClient {
   final Dio dio;
 
-  const DioCleanHttpClient({@required this.dio});
+  const DioCleanHttpClient({required this.dio});
 
-  FutureOr<dynamic> get(String path, {Map<String,dynamic> queryParams}) async {
+  FutureOr<Object> get(String path, {Map<String,dynamic> queryParams = {}}) async {
     // TODO: implement get for dio.
   }
 }
@@ -75,23 +75,25 @@ For example, if you only need your data source to GET and CREATE, you can write 
 
 ```dart
 abstract class PeopleDataSource 
-  implements MultipleGetterDataSource<Person, Null>, CreatorDataSource<Person,Person>{}
+  implements MultipleGetterDataSource<Person, Unit>, CreatorDataSource<Person,Person>{}
 
 class PeopleDataSourceImpl extends PeopleDataSource {
   final Dio client;
 
-  PeopleDataSourceImpl({@required this.client});
+  PeopleDataSourceImpl({required this.client});
 
   @override
-  FutureOr<List<Person>> readMany({Null param}) async {
+  FutureOr<List<Person>> readMany({Unit param = unit}) async {
     // TODO: implement readMany
   }
 
   @override
-  FutureOr<Person> create({Person param}) {
+  FutureOr<Person> create({required Person param}) {
     // TODO: implement create
   }
 }
+
+/// Note: Use `Unit` from dartz to represent void.
 ```
 
 See docs and example project to learn more.

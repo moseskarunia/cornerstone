@@ -4,36 +4,26 @@ import 'package:cornerstone/src/utilities/cornerstone_persistent_repository_mixi
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
-import 'package:meta/meta.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
-
-class MockHive extends Mock implements HiveInterface {}
-
-class MockBox extends Mock implements Box {}
-
-class MockConvertToFailure extends Mock implements ConvertToFailure {}
-
-class MockConvertToSnapshot extends Mock
-    implements ConvertToSnapshot<Map<String, dynamic>, FruitSnapshot> {}
 
 class FruitSnapshot extends CornerstoneSnapshot {
   final List<String> data;
 
-  FruitSnapshot({this.data = const [], DateTime timestamp})
+  FruitSnapshot({this.data = const [], required DateTime timestamp})
       : super(clock: const Clock(), timestamp: timestamp);
 
   @override
-  List<Object> get props => [timestamp, data];
+  List<Object?> get props => [timestamp, data];
 }
 
 class FruitQueryParam extends Equatable {
   final String name;
 
-  const FruitQueryParam({this.name});
+  const FruitQueryParam({required this.name});
 
   @override
-  List<Object> get props => [name];
+  List<Object?> get props => [name];
 }
 
 abstract class FruitRepository
@@ -43,18 +33,17 @@ abstract class FruitRepository
 
 class FruitRepositoryImpl extends FruitRepository {
   @override
-  final ConvertToFailure convertToFailure;
-  final ConvertToSnapshot<Map<String, dynamic>, FruitSnapshot>
-      convertToSnapshot;
+  final ConvertToFailure<Object?> convertToFailure;
+  final ConvertToSnapshot<FruitSnapshot> convertToSnapshot;
   final HiveInterface hive;
 
   @override
   FruitSnapshot snapshot;
 
   FruitRepositoryImpl({
-    @required this.hive,
-    @required this.convertToFailure,
-    @required this.convertToSnapshot,
+    required this.hive,
+    required this.convertToFailure,
+    required this.convertToSnapshot,
   }) : snapshot = FruitSnapshot(
           data: [],
           timestamp: DateTime.parse('2021-01-10T10:00:00Z').toLocal(),
@@ -62,31 +51,43 @@ class FruitRepositoryImpl extends FruitRepository {
 
   @override
   Map<String, dynamic> get asJson => <String, dynamic>{
-        'data': snapshot?.data,
-        'timestamp': snapshot?.timestamp?.toUtc()?.toIso8601String()
+        'data': snapshot.data,
+        'timestamp': snapshot.timestamp.toUtc().toIso8601String()
       };
 }
 
+class MockBox extends Mock implements Box {}
+
+class MockConvertToFailure extends Mock implements ConvertToFailure {}
+
+class MockHiveInterface extends Mock implements HiveInterface {}
+
+class MockConvertToSnapshot extends Mock
+    implements ConvertToSnapshot<FruitSnapshot> {}
+
 void main() {
   final dateFixture = DateTime.parse('2021-01-10T10:00:00Z').toLocal();
-  MockBox box;
-  MockConvertToFailure convertToFailure;
-  MockConvertToSnapshot convertToSnapshot;
-  FruitRepositoryImpl repo;
-  MockHive hive;
+  late MockBox box;
+  late MockConvertToFailure convertToFailure;
+  late ConvertToSnapshot<FruitSnapshot> convertToSnapshot;
+  late FruitRepositoryImpl repo;
+  late MockHiveInterface hive;
 
   setUp(() {
     convertToSnapshot = MockConvertToSnapshot();
     convertToFailure = MockConvertToFailure();
     box = MockBox();
-    hive = MockHive();
+    hive = MockHiveInterface();
     repo = FruitRepositoryImpl(
       hive: hive,
       convertToFailure: convertToFailure,
       convertToSnapshot: convertToSnapshot,
     );
 
-    when(hive.openBox(any)).thenAnswer((_) async => box);
+    when(() => hive.openBox(any())).thenAnswer((_) async => box);
+    when(() => box.clear()).thenAnswer((_) async => 0);
+    when(() => convertToFailure(any()))
+        .thenReturn(Failure(name: 'err.app.TEST_ERROR'));
   });
   group('CornerstonePersistenceRepositoryMixin', () {
     test('storageName should be FruitRepositoryImpl', () {
@@ -95,52 +96,59 @@ void main() {
 
     group('save', () {
       test(
-        'should catch Exception '
-        'and return the result of convertToFailure',
+        'should catch Exception and return the result of convertToFailure',
         () async {
           final e = HiveError('TEST_ERROR');
-          when(box.putAll(any)).thenThrow(e);
-          when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+          when(() => box.putAll(repo.asJson)).thenThrow(e);
+          when(() => convertToFailure(e)).thenReturn(Failure<Object?>(
+            name: 'TEST_ERROR',
+            details: e,
+          ));
 
           final result = await repo.save();
 
-          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
+          expect((result as Left).value,
+              Failure<Object?>(name: 'TEST_ERROR', details: e));
 
           verifyInOrder([
-            hive.openBox(repo.storageName),
-            box.putAll(repo.asJson),
-            convertToFailure(e),
+            () => hive.openBox(repo.storageName),
+            () => box.putAll(repo.asJson),
+            () => convertToFailure(e),
           ]);
         },
       );
 
       test('should return unit when succeed', () async {
+        when(() => box.putAll(repo.asJson)).thenAnswer((_) => Future.value());
         final result = await repo.save();
         expect((result as Right).value, unit);
 
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.putAll(repo.asJson),
+          () => hive.openBox(repo.storageName),
+          () => box.putAll(repo.asJson),
         ]);
         verifyZeroInteractions(convertToFailure);
       });
     });
 
     group('clear', () {
-      test(
-          'should catch Exception '
-          'and return the result of convertToFailure', () async {
+      test('should catch Exception and return the result of convertToFailure',
+          () async {
         final e = HiveError('TEST_ERROR');
-        when(box.clear()).thenThrow(e);
-        when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+        when(() => box.clear()).thenThrow(e);
+        when(() => convertToFailure(e)).thenReturn(Failure<Object?>(
+          name: 'TEST_ERROR',
+          details: e,
+        ));
 
         final result = await repo.clear();
 
-        expect((result as Left).value, Failure<dynamic>(name: 'TEST_ERROR'));
+        expect((result as Left).value,
+            Failure<Object?>(name: 'TEST_ERROR', details: e));
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.clear(),
-          convertToFailure(e),
+          () => hive.openBox(repo.storageName),
+          () => box.clear(),
+          () => convertToFailure(e),
         ]);
       });
 
@@ -148,9 +156,9 @@ void main() {
         final result = await repo.clear();
         expect((result as Right).value, unit);
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.clear(),
-          verifyZeroInteractions(convertToFailure),
+          () => hive.openBox(repo.storageName),
+          () => box.clear(),
+          () => verifyZeroInteractions(convertToFailure),
         ]);
       });
     });
@@ -161,27 +169,52 @@ void main() {
         'and return the result of convertToFailure',
         () async {
           final e = HiveError('TEST_ERROR');
-          when(box.toMap()).thenThrow(e);
-          when(convertToFailure(any)).thenReturn(Failure(name: 'TEST_ERROR'));
+          when(() => box.toMap()).thenThrow(e);
+          when(() => convertToFailure(e))
+              .thenReturn(Failure<Object?>(name: 'TEST_ERROR', details: e));
 
           final result = await repo.load();
 
-          expect((result as Left).value, Failure(name: 'TEST_ERROR'));
+          expect((result as Left).value,
+              Failure<Object?>(name: 'TEST_ERROR', details: e));
 
           verifyInOrder([
-            hive.openBox(repo.storageName),
-            box.toMap(),
-            convertToFailure(e),
+            () => hive.openBox(repo.storageName),
+            () => box.toMap(),
+            () => convertToFailure(e),
           ]);
         },
       );
 
-      test('should assign snapshot', () async {
-        when(box.toMap()).thenReturn(<String, dynamic>{
+      test(
+        'should return err.cornerstone.EMPTY_LOCAL_STORAGE',
+        () async {
+          when(() => box.toMap()).thenReturn({});
+
+          final result = await repo.load();
+
+          expect(
+            (result as Left).value,
+            Failure<Object?>(
+              name: 'err.cornerstone.EMPTY_LOCAL_STORAGE',
+              details: <String, dynamic>{'storageName': 'FruitRepositoryImpl'},
+            ),
+          );
+
+          verifyInOrder([
+            () => hive.openBox(repo.storageName),
+            () => box.toMap(),
+          ]);
+        },
+      );
+
+      test('should assign snapshot and return the snapshot', () async {
+        final mapFixture = <String, dynamic>{
           'data': ['Apple'],
           'timestamp': '2021-01-10T10:00:00Z'
-        });
-        when(convertToSnapshot(any)).thenReturn(FruitSnapshot(
+        };
+        when(() => box.toMap()).thenReturn(mapFixture);
+        when(() => convertToSnapshot(mapFixture)).thenReturn(FruitSnapshot(
           data: ['Apple'],
           timestamp: dateFixture,
         ));
@@ -192,18 +225,15 @@ void main() {
         );
         expect(
           repo.snapshot,
-          FruitSnapshot(
-            data: ['Apple'],
-            timestamp: dateFixture,
-          ),
+          FruitSnapshot(data: ['Apple'], timestamp: dateFixture),
         );
         verifyInOrder([
-          hive.openBox(repo.storageName),
-          box.toMap(),
-          convertToSnapshot(<String, dynamic>{
-            'data': ['Apple'],
-            'timestamp': '2021-01-10T10:00:00Z'
-          }),
+          () => hive.openBox(repo.storageName),
+          () => box.toMap(),
+          () => convertToSnapshot(<String, dynamic>{
+                'data': ['Apple'],
+                'timestamp': '2021-01-10T10:00:00Z'
+              }),
         ]);
       });
     });
