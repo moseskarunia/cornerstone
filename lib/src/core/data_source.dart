@@ -126,7 +126,7 @@ abstract class UpdaterDataSource<Type, Param> {
 }
 
 /// Similar to [UpdaterDataSource], only returns Either form right away.
-abstract class SafecUpdaterDataSource<Type, Param> {
+abstract class SafeUpdaterDataSource<Type, Param> {
   FutureOr<Either<Failure, Type>> update({required Param param});
 }
 

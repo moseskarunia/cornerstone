@@ -1,3 +1,6 @@
+## [2.0.0-nullsafety.14] - 5 Aug 2021
+- Fix: Typo, should be `SafeUpdaterDataSource` instead of `SafecUpdaterDataSource`
+
 ## [2.0.0-nullsafety.13] - 5 Jun 2021
 - New: `ConvertToFailure` now accepts stackTrace as optional positional parameter.
 
